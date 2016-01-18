@@ -39,7 +39,8 @@ import cz.brmlab.yodaqa.model.Question.Focus;
  * or possibly a support for alignment. */
 
 public class FocusGenerator extends JCasAnnotator_ImplBase {
-	final Logger logger = LoggerFactory.getLogger(FocusGenerator.class);
+	private static final String RUSSIAN = "ru";
+    final Logger logger = LoggerFactory.getLogger(FocusGenerator.class);
 
 	public void initialize(UimaContext aContext) throws ResourceInitializationException {
 		super.initialize(aContext);
@@ -72,7 +73,7 @@ public class FocusGenerator extends JCasAnnotator_ImplBase {
 
 		if (fp == null)
 			fp = fpDepRoot(jcas);
-		if (fp == null)
+		if (fp == null && !RUSSIAN.equals(jcas.getDocumentLanguage()))
 			fp = fpByPos(jcas);
 
 		if (fp == null) {
