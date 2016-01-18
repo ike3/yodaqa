@@ -102,6 +102,8 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 	protected static boolean buildPipeline(AggregateBuilder builder) throws ResourceInitializationException {
 		boolean outputsNewCASes = false;
 
+		String casDumpDir = System.getProperty("cz.brmlab.yodaqa.cas_dump_dir");
+		boolean casDumpDo = casDumpDir != null && !casDumpDir.isEmpty();
 		String answerSaveDir = System.getProperty("cz.brmlab.yodaqa.save_answerfvs");
 		boolean answerSaveDo = answerSaveDir != null && !answerSaveDir.isEmpty();
 		String answerLoadDir = System.getProperty("cz.brmlab.yodaqa.load_answerfvs");
@@ -129,8 +131,22 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 			AnalysisEngineDescription questionAnalysis = QuestionAnalysisAE.createEngineDescription();
 			builder.add(questionAnalysis);
 
+			if (casDumpDo) {
+			    builder.add(AnalysisEngineFactory.createEngineDescription(
+                        DumpCAS2File.class,
+                        DumpCAS2File.PARAM_SAVE_DIR, answerSaveDir,
+                        DumpCAS2File.PARAM_SUFFIX, "QuestionAnalysisAE"));
+			}
+
 			AnalysisEngineDescription answerProducer = createAnswerProducerDescription();
 			builder.add(answerProducer);
+
+            if (casDumpDo) {
+                builder.add(AnalysisEngineFactory.createEngineDescription(
+                        DumpCAS2File.class,
+                        DumpCAS2File.PARAM_SAVE_DIR, answerSaveDir,
+                        DumpCAS2File.PARAM_SUFFIX, "AnswerProducerAE"));
+            }
 
 			AnalysisEngineDescription answerAnalysis = AnswerAnalysisAE.createEngineDescription();
 			builder.add(answerAnalysis);
@@ -160,6 +176,14 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 			AnalysisEngineDescription answerScoring = AnswerScoringAE.createEngineDescription("");
 			builder.add(answerScoring);
 		}
+
+        if (casDumpDo) {
+            builder.add(AnalysisEngineFactory.createEngineDescription(
+                    DumpCAS2File.class,
+                    DumpCAS2File.PARAM_SAVE_DIR, answerSaveDir,
+                    DumpCAS2File.PARAM_SUFFIX, "AnswerAnalysisAE"));
+        }
+
 		if (answerSaveDo)
 			return outputsNewCASes;
 
