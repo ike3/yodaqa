@@ -24,9 +24,9 @@ public class DBpediaTypes extends DBpediaLookup {
 		LogFactory.getLog(DBpediaTypes.class);
 
 	/** Query for a given title, returning a set of types. */
-	public List<String> query(String title, Logger logger) {
+	public List<String> query(String title, Logger logger, String language) {
 		for (String titleForm : cookedTitles(title)) {
-			List<String> results = queryTitleForm(titleForm, logger);
+			List<String> results = queryTitleForm(titleForm, logger, language);
 			if (!results.isEmpty())
 				return results;
 		}
@@ -35,7 +35,7 @@ public class DBpediaTypes extends DBpediaLookup {
 
 	/** Query for a given specific title form, returning a set
 	 * of types. */
-	public List<String> queryTitleForm(String title, Logger logger) {
+	public List<String> queryTitleForm(String title, Logger logger, String language) {
 		/* XXX: Case-insensitive search via SPARQL turns out
 		 * to be surprisingly tricky.  Cover 91% of all cases
 		 * by capitalizing words that are not stopwords  */
@@ -45,11 +45,11 @@ public class DBpediaTypes extends DBpediaLookup {
 		String rawQueryStr =
 			"{\n" +
 			   // (A) fetch resources with @title label
-			"  ?res rdfs:label \"" + title + "\"@en.\n" +
+			"  ?res rdfs:label \"" + title + "\"@" + language + ".\n" +
 			"} UNION {\n" +
 			   // (B) fetch also resources targetted by @title redirect
 			"  ?redir dbo:wikiPageRedirects ?res .\n" +
-			"  ?redir rdfs:label \"" + title + "\"@en .\n" +
+			"  ?redir rdfs:label \"" + title + "\"@" + language + " .\n" +
 			"}\n" +
 			 // set the output variable
 			"?res rdf:type ?type .\n" +
