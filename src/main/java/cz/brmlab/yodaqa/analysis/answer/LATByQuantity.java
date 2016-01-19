@@ -42,11 +42,14 @@ public class LATByQuantity extends JCasAnnotator_ImplBase {
 		"magnitude relation",
 		// positions and distances, e.g. altitude:
 		"magnitude",
+		"мера", "величина отношения", "величина"
 	};
 	protected static long synsets[] = {
 		33914,
 		13837364,
 		5097645,
+
+		33914,13837364, 5097645,
 	};
 
 	public void initialize(UimaContext aContext) throws ResourceInitializationException {
@@ -99,19 +102,21 @@ public class LATByQuantity extends JCasAnnotator_ImplBase {
 		 * (as opposed to e.g. "many"). */
 		if (isCD) {
 			addLATFeature(jcas, AF.LATQuantityCD);
-			addLAT(new QuantityCDLAT(jcas), LATbase.getBegin(), LATbase.getEnd(), LATbase, texts[0], synsets[0], pos, spec);
-			addLAT(new QuantityCDLAT(jcas), LATbase.getBegin(), LATbase.getEnd(), LATbase, texts[1], synsets[1], pos, spec);
-			addLAT(new QuantityCDLAT(jcas), LATbase.getBegin(), LATbase.getEnd(), LATbase, texts[2], synsets[2], pos, spec);
+			for (int i = 0; i < texts.length; i++) {
+			    addLAT(new QuantityCDLAT(jcas), LATbase.getBegin(), LATbase.getEnd(), LATbase, texts[i], synsets[i], pos, spec);
+			}
 		} else {
 			addLATFeature(jcas, AF.LATQuantity);
-			addLAT(new QuantityLAT(jcas), LATbase.getBegin(), LATbase.getEnd(), LATbase, texts[0], synsets[0], pos, spec);
-			addLAT(new QuantityLAT(jcas), LATbase.getBegin(), LATbase.getEnd(), LATbase, texts[1], synsets[1], pos, spec);
-			addLAT(new QuantityLAT(jcas), LATbase.getBegin(), LATbase.getEnd(), LATbase, texts[2], synsets[2], pos, spec);
+            for (int i = 0; i < texts.length; i++) {
+                addLAT(new QuantityLAT(jcas), LATbase.getBegin(), LATbase.getEnd(), LATbase, texts[i], synsets[i], pos, spec);
+            }
 		}
 
-		logger.debug(".. Quantity {} LAT {}/{}, {}/{}, {}/{} based on [{}] <<{}>>",
+		logger.debug(".. Quantity {} LAT {}({})/{}, {}({})/{}, {}({})/{} based on [{}] <<{}>>",
 			isCD ? "CD" : "noCD",
-			texts[0], synsets[0], texts[1], synsets[1], texts[2], synsets[2],
+			texts[0], texts[3], synsets[0],
+			texts[1], texts[4], synsets[1],
+			texts[2], texts[5], synsets[2],
 			LATbase.getClass().getSimpleName(), LATbase.getCoveredText());
 	}
 
