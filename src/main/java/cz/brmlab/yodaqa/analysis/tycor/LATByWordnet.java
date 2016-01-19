@@ -10,7 +10,6 @@ import java.util.Set;
 
 import net.sf.extjwnl.data.IndexWord;
 import net.sf.extjwnl.data.Word;
-import net.sf.extjwnl.dictionary.Dictionary;
 import net.sf.extjwnl.data.PointerTarget;
 import net.sf.extjwnl.data.PointerType;
 import net.sf.extjwnl.data.Synset;
@@ -27,8 +26,7 @@ import org.slf4j.LoggerFactory;
 
 import cz.brmlab.yodaqa.model.TyCor.LAT;
 import cz.brmlab.yodaqa.model.TyCor.WordnetLAT;
-import cz.brmlab.yodaqa.provider.Wordnet;
-
+import cz.brmlab.yodaqa.provider.*;
 import de.tudarmstadt.ukp.dkpro.core.api.ner.type.NamedEntity;
 
 /**
@@ -46,9 +44,9 @@ public class LATByWordnet extends JCasAnnotator_ImplBase {
 	public static final String PARAM_EXPAND_SYNSET_LATS = "expand-synset-lats";
 	@ConfigurationParameter(name = PARAM_EXPAND_SYNSET_LATS, mandatory = false, defaultValue = "true")
 	protected boolean expandSynsetLATs;
-	
-	Dictionary dictionary = null;
-	
+
+	MultiLanguageDictionaryFacade dictionary = null;
+
 	/* We don't generalize further over the noun.Tops words that
 	 * represent the most abstract hierarchy and generally words
 	 * that have nothing in common anymore.
@@ -81,10 +79,10 @@ public class LATByWordnet extends JCasAnnotator_ImplBase {
 		{
 			tops = new HashSet<String>(Arrays.asList(tops_list));
 		}
-		
+
 		super.initialize(aContext);
 
-		dictionary = Wordnet.getDictionary();
+		dictionary = MultiLanguageDictionaryFacade.getInstance();
 	}
 
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
@@ -141,14 +139,14 @@ public class LATByWordnet extends JCasAnnotator_ImplBase {
 
 		if (lat.getSynset() == 0) {
 			IndexWord w = dictionary.getIndexWord(wnpos, lat.getText());
-			
-			if (w == null) 
+
+			if (w == null)
 			{
 				logger.info("?! word " + lat.getText() + " of POS " + latpos + " not in Wordnet");
 				return;
 			}
 
-			if (wnpos == net.sf.extjwnl.data.POS.NOUN) 
+			if (wnpos == net.sf.extjwnl.data.POS.NOUN)
 			{
 				/* Got a noun right away. */
 				genDerivedSynsets(latmap, lat, w, wnlist, lat.getSpecificity() - 1);
@@ -212,15 +210,15 @@ public class LATByWordnet extends JCasAnnotator_ImplBase {
 		boolean foundNoun = false;
 		List<Word> nounWords = synset.getWords();
 		Word nounWord = nounWords.get(0);
-		
+
 		logger.debug("checking noun synsets of " + nounWord.getLemma() + "/" + synset.getOffset());
 		for (PointerTarget t : synset.getTargets(PointerType.ATTRIBUTE)) {
 			Synset noun = (Synset) t;
-			
+
 			List<Word> nounFoundWords = noun.getWords();
 			Word foundWord = nounFoundWords.get(0);
 			foundNoun = true;
-			
+
 			logger.debug(".. adding LAT noun " + foundWord.getLemma());
 			genDerivedSynsets(latmap, lat, noun, wnlist, lat.getSpecificity());
 			logger.debug("expanded LAT " + lat.getText() + " to wn LATs: " + wnlist.toString());
@@ -275,11 +273,11 @@ public class LATByWordnet extends JCasAnnotator_ImplBase {
 			}
 			return;
 		}
-		
+
 		List<Word> words = synset2.getWords();
 		Word word = words.get(0);
 		String lemma = word.getLemma().replace('_', ' ');
-		
+
 		/* New LAT. */
 		l2 = new WordnetLAT(lat.getCAS().getJCas());
 		l2.setBegin(lat.getBegin());

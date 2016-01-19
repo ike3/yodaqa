@@ -2,15 +2,12 @@ package cz.brmlab.yodaqa.provider.rdf;
 
 import com.hp.hpl.jena.rdf.model.Literal;
 
-import cz.brmlab.yodaqa.provider.Wordnet;
-
+import cz.brmlab.yodaqa.provider.*;
 import net.sf.extjwnl.data.IndexWord;
-import net.sf.extjwnl.dictionary.Dictionary;
 import net.sf.extjwnl.data.Synset;
 
 import java.util.*;
 
-import org.apache.commons.lang.WordUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.uima.resource.ResourceInitializationException;
@@ -28,11 +25,11 @@ import org.slf4j.Logger;
 public class DBpediaWNTypes extends DBpediaLookup {
 	private static final Log logger = LogFactory.getLog(DBpediaWNTypes.class);
 
-	Map<String, Dictionary> dictionaryMap = null;
+	MultiLanguageDictionaryFacade dictionary = null;
 
 	public void initialize() throws ResourceInitializationException
 	{
-		dictionaryMap = Wordnet.getDictionaryMap();
+	    dictionary = MultiLanguageDictionaryFacade.getInstance();
 	}
 
 	/** Query for a given title, returning a set of types. The type is in
@@ -82,10 +79,7 @@ public class DBpediaWNTypes extends DBpediaLookup {
 			String typeLabel = rawResult[0].getString().replaceAll("^synset-([^-]*)-.*$", "$1").replaceAll("_", " ");
 
 			try {
-				IndexWord w = dictionaryMap.get(language).getIndexWord(net.sf.extjwnl.data.POS.NOUN, typeLabel);
-				if (w == null) {
-				    w = dictionaryMap.get("en").getIndexWord(net.sf.extjwnl.data.POS.NOUN, typeLabel);
-				}
+				IndexWord w = dictionary.getIndexWord(net.sf.extjwnl.data.POS.NOUN, typeLabel);
 				Synset s = w.getSenses().get(senseIdx - 1);
 				long synset = s.getOffset();
 
