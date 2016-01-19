@@ -40,6 +40,7 @@ public class LATByWordnetTest {
                 ai.setFeatures(fv.toFSArray(jcas));
 
                 LAT lat = new LAT(jcas);
+                lat.setLanguage(jcas.getDocumentLanguage());
                 lat.setText(INPUT);
                 lat.addToIndexes(jcas);
 

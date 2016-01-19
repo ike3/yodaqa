@@ -111,11 +111,11 @@ public class LATByWnInstance extends JCasAnnotator_ImplBase {
 		pos.setPosValue("NNS");
 		pos.addToIndexes();
 
-		addLAT(new WnInstanceLAT(jcas), base.getBegin(), base.getEnd(), base, lemma, pos, synset.getOffset(), 0.0);
+		addLAT(new WnInstanceLAT(jcas), base.getBegin(), base.getEnd(), base, lemma, pos, synset.getOffset(), 0.0, jcas.getDocumentLanguage());
 		logger.debug(".. LAT {}/{} is Wordnet of-instance of {}", lemma, synset.getOffset(), base.getCoveredText());
 	}
 
-	protected void addLAT(LAT lat, int begin, int end, Annotation base, String text, POS pos, long synset, double spec) {
+	protected void addLAT(LAT lat, int begin, int end, Annotation base, String text, POS pos, long synset, double spec, String language) {
 		lat.setBegin(begin);
 		lat.setEnd(end);
 		lat.setBase(base);
@@ -124,6 +124,7 @@ public class LATByWnInstance extends JCasAnnotator_ImplBase {
 		lat.setSpecificity(spec);
 		lat.setSynset(synset);
 		lat.addToIndexes();
+		lat.setLanguage(language);
 	}
 
 	protected void addLATFeature(JCas jcas, String f) throws AnalysisEngineProcessException {

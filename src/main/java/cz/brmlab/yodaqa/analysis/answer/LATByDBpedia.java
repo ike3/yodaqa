@@ -137,7 +137,7 @@ public class LATByDBpedia extends JCasAnnotator_ImplBase {
 		pos.setPosValue("NNS");
 		pos.addToIndexes();
 
-		addLAT(lat, LATBase.getBegin(), LATBase.getEnd(), LATBase, ntype, pos, synset, 0.0);
+		addLAT(lat, LATBase.getBegin(), LATBase.getEnd(), LATBase, ntype, pos, synset, 0.0, jcas.getDocumentLanguage());
 
 		if (synset == 0) {
 			typelist.append(" | " + ntype);
@@ -146,7 +146,7 @@ public class LATByDBpedia extends JCasAnnotator_ImplBase {
 		}
 	}
 
-	protected void addLAT(LAT lat, int begin, int end, Annotation base, String text, POS pos, long synset, double spec) {
+	protected void addLAT(LAT lat, int begin, int end, Annotation base, String text, POS pos, long synset, double spec, String language) {
 		lat.setBegin(begin);
 		lat.setEnd(end);
 		lat.setBase(base);
@@ -155,6 +155,7 @@ public class LATByDBpedia extends JCasAnnotator_ImplBase {
 		lat.setSpecificity(spec);
 		lat.setSynset(synset);
 		lat.addToIndexes();
+		lat.setLanguage(language);
 	}
 
 	protected void addLATFeature(JCas jcas, String f) throws AnalysisEngineProcessException {

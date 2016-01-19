@@ -138,7 +138,7 @@ public class LATByWordnet extends JCasAnnotator_ImplBase {
 		StringBuilder wnlist = new StringBuilder();
 
 		if (lat.getSynset() == 0) {
-			IndexWord w = dictionary.getIndexWord(wnpos, lat.getText());
+			IndexWord w = dictionary.getIndexWord(wnpos, lat.getText(), lat.getLanguage());
 
 			if (w == null)
 			{
@@ -166,7 +166,7 @@ public class LATByWordnet extends JCasAnnotator_ImplBase {
 				}
 			}
 		} else {
-			Synset s = dictionary.getSynsetAt(wnpos, lat.getSynset());
+			Synset s = dictionary.getSynsetAt(wnpos, lat.getSynset(), lat.getLanguage());
 			if (s == null) {
 				logger.warn("?! word " + lat.getText() + "/" + lat.getSynset() + " of POS " + latpos + " not in Wordnet even though it has Wordnet sense assigned");
 				return;

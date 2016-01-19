@@ -79,7 +79,9 @@ public class DBpediaWNTypes extends DBpediaLookup {
 			String typeLabel = rawResult[0].getString().replaceAll("^synset-([^-]*)-.*$", "$1").replaceAll("_", " ");
 
 			try {
-				IndexWord w = dictionary.getIndexWord(net.sf.extjwnl.data.POS.NOUN, typeLabel);
+			    // DbPedia always returns EN types, so probably there is no need to query wordnet anything but EN
+				IndexWord w = dictionary.getIndexWord(net.sf.extjwnl.data.POS.NOUN, typeLabel, language);
+				if (w == null) w = dictionary.getIndexWord(net.sf.extjwnl.data.POS.NOUN, typeLabel, "en");
 				Synset s = w.getSenses().get(senseIdx - 1);
 				long synset = s.getOffset();
 

@@ -247,6 +247,14 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 			AnalysisEngineDescription answerScoring = AnswerScoringAE.createEngineDescription("1");
 			builder.add(answerScoring);
 		}
+
+        if (casDumpDo) {
+            builder.add(AnalysisEngineFactory.createEngineDescription(
+                    DumpCAS2File.class,
+                    DumpCAS2File.PARAM_SAVE_DIR, answerSaveDir,
+                    DumpCAS2File.PARAM_SUFFIX, "AnswerAnalysisAE-0"));
+        }
+
 		if (answer1SaveDo)
 			return outputsNewCASes;
 
@@ -292,6 +300,14 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 			AnalysisEngineDescription answerScoring = AnswerScoringAE.createEngineDescription("2");
 			builder.add(answerScoring);
 		}
+
+        if (casDumpDo) {
+            builder.add(AnalysisEngineFactory.createEngineDescription(
+                    DumpCAS2File.class,
+                    DumpCAS2File.PARAM_SAVE_DIR, answerSaveDir,
+                    DumpCAS2File.PARAM_SUFFIX, "AnswerAnalysisAE-1"));
+        }
+
 		return outputsNewCASes;
 	}
 

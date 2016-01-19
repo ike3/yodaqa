@@ -66,7 +66,7 @@ public class LATByNE extends JCasAnnotator_ImplBase {
 				assert(pos != null);
 			}
 
-			addLAT(new NELAT(jcas), ne.getBegin(), ne.getEnd(), ne, ne.getValue(), pos, synset, 0.0);
+			addLAT(new NELAT(jcas), ne.getBegin(), ne.getEnd(), ne, ne.getValue(), pos, synset, 0.0, jcas.getDocumentLanguage());
 			logger.debug(".. LAT {}/{} by NE {}", ne.getValue(), synset, ne.getCoveredText());
 
 			addLATFeature(jcas, AF.LATNE);
@@ -74,7 +74,7 @@ public class LATByNE extends JCasAnnotator_ImplBase {
 		return ne_found;
 	}
 
-	protected void addLAT(LAT lat, int begin, int end, Annotation base, String text, POS pos, long synset, double spec) {
+	protected void addLAT(LAT lat, int begin, int end, Annotation base, String text, POS pos, long synset, double spec, String language) {
 		lat.setBegin(begin);
 		lat.setEnd(end);
 		lat.setBase(base);
@@ -83,6 +83,7 @@ public class LATByNE extends JCasAnnotator_ImplBase {
 		lat.setSpecificity(spec);
 		lat.setSynset(synset);
 		lat.addToIndexes();
+		lat.setLanguage(language);
 	}
 
 	protected void addLATFeature(JCas jcas, String f) throws AnalysisEngineProcessException {

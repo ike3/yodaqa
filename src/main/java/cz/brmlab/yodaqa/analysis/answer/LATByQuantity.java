@@ -103,12 +103,12 @@ public class LATByQuantity extends JCasAnnotator_ImplBase {
 		if (isCD) {
 			addLATFeature(jcas, AF.LATQuantityCD);
 			for (int i = 0; i < texts.length; i++) {
-			    addLAT(new QuantityCDLAT(jcas), LATbase.getBegin(), LATbase.getEnd(), LATbase, texts[i], synsets[i], pos, spec);
+			    addLAT(new QuantityCDLAT(jcas), LATbase.getBegin(), LATbase.getEnd(), LATbase, texts[i], synsets[i], pos, spec, jcas.getDocumentLanguage());
 			}
 		} else {
 			addLATFeature(jcas, AF.LATQuantity);
             for (int i = 0; i < texts.length; i++) {
-                addLAT(new QuantityLAT(jcas), LATbase.getBegin(), LATbase.getEnd(), LATbase, texts[i], synsets[i], pos, spec);
+                addLAT(new QuantityLAT(jcas), LATbase.getBegin(), LATbase.getEnd(), LATbase, texts[i], synsets[i], pos, spec, jcas.getDocumentLanguage());
             }
 		}
 
@@ -143,7 +143,7 @@ public class LATByQuantity extends JCasAnnotator_ImplBase {
 		return false;
 	}
 
-	protected void addLAT(LAT lat, int begin, int end, Annotation base, String text, long synset, POS pos, double spec) {
+	protected void addLAT(LAT lat, int begin, int end, Annotation base, String text, long synset, POS pos, double spec, String language) {
 		lat.setBegin(begin);
 		lat.setEnd(end);
 		lat.setBase(base);
@@ -152,6 +152,7 @@ public class LATByQuantity extends JCasAnnotator_ImplBase {
 		lat.setSynset(synset);
 		lat.setSpecificity(spec);
 		lat.addToIndexes();
+		lat.setLanguage(language);
 	}
 
 	protected void addLATFeature(JCas jcas, String f) throws AnalysisEngineProcessException {

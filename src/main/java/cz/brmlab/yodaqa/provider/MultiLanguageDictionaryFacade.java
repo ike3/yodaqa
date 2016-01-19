@@ -19,13 +19,15 @@ public class MultiLanguageDictionaryFacade {
         return instance;
     }
 
-    public IndexWord getIndexWord(POS pos, String lemma) throws JWNLException {
-        IndexWord result = dictionaryMap.get("en").getIndexWord(pos, lemma);
-        return result != null ? result : dictionaryMap.get("ru").getIndexWord(pos, lemma);
+    public IndexWord getIndexWord(POS pos, String lemma, String language) throws JWNLException {
+        return dictionaryMap.get(enByDefault(language)).getIndexWord(pos, lemma);
     }
 
-    public Synset getSynsetAt(POS pos, long offset) throws JWNLException {
-        Synset result = dictionaryMap.get("en").getSynsetAt(pos, offset);
-        return result != null ? result : dictionaryMap.get("ru").getSynsetAt(pos, offset);
+    public Synset getSynsetAt(POS pos, long offset, String language) throws JWNLException {
+        return dictionaryMap.get(enByDefault(language)).getSynsetAt(pos, offset);
+    }
+
+    private String enByDefault(String language) {
+        return language == null ? "en" : language;
     }
 }
