@@ -20,12 +20,12 @@ public class MultiLanguageDictionaryFacade {
     }
 
     public IndexWord getIndexWord(POS pos, String lemma) throws JWNLException {
-        IndexWord result = dictionaryMap.get("ru").getIndexWord(pos, lemma);
-        return result != null ? result : dictionaryMap.get("en").getIndexWord(pos, lemma);
+        IndexWord result = dictionaryMap.get("en").getIndexWord(pos, lemma);
+        return result != null ? result : dictionaryMap.get("ru").getIndexWord(pos, lemma);
     }
 
     public Synset getSynsetAt(POS pos, long offset) throws JWNLException {
-        Synset result = dictionaryMap.get("ru").getSynsetAt(pos, offset);
-        return result != null ? result : dictionaryMap.get("en").getSynsetAt(pos, offset);
+        Synset result = dictionaryMap.get("en").getSynsetAt(pos, offset);
+        return result != null ? result : dictionaryMap.get("ru").getSynsetAt(pos, offset);
     }
 }
