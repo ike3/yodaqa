@@ -1,4 +1,4 @@
-package cz.brmlab.yodaqa.analysis;
+package cz.brmlab.yodaqa;
 
 import static org.apache.uima.fit.factory.CollectionReaderFactory.createReaderDescription;
 
@@ -7,7 +7,7 @@ import org.apache.uima.collection.CollectionReaderDescription;
 import org.apache.uima.fit.factory.*;
 import org.apache.uima.flow.impl.FixedFlowController;
 import org.apache.uima.resource.ResourceInitializationException;
-import org.junit.Test;
+import org.junit.*;
 
 import cz.brmlab.yodaqa.analysis.answer.AnswerAnalysisAE;
 import cz.brmlab.yodaqa.flow.MultiCASPipeline;
@@ -20,6 +20,7 @@ public class AnswerAnalysisAETest {
     String dir = "C:\\Users\\skuzmin\\Projects\\BigData\\yodaqa\\dump\\";
 
     @Test
+    @Ignore // требует наличия файлов в спец каталоге, игнор
     public void run() throws Exception {
         AnalysisEngineDescription pipeline = createQuestionAnalysisAE();
 
