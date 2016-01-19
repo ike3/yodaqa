@@ -1,9 +1,5 @@
 package cz.brmlab.yodaqa.provider.rdf;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-
 import com.hp.hpl.jena.rdf.model.Literal;
 
 import cz.brmlab.yodaqa.provider.Wordnet;
@@ -11,6 +7,8 @@ import cz.brmlab.yodaqa.provider.Wordnet;
 import net.sf.extjwnl.data.IndexWord;
 import net.sf.extjwnl.dictionary.Dictionary;
 import net.sf.extjwnl.data.Synset;
+
+import java.util.*;
 
 import org.apache.commons.lang.WordUtils;
 import org.apache.commons.logging.Log;
@@ -29,19 +27,19 @@ import org.slf4j.Logger;
 
 public class DBpediaWNTypes extends DBpediaLookup {
 	private static final Log logger = LogFactory.getLog(DBpediaWNTypes.class);
-	
-	Dictionary dictionary = null;
-	
+
+	Map<String, Dictionary> dictionaryMap = null;
+
 	public void initialize() throws ResourceInitializationException
 	{
-		dictionary = Wordnet.getDictionary();
+		dictionaryMap = Wordnet.getDictionaryMap();
 	}
-	
+
 	/** Query for a given title, returning a set of types. The type is in
 	 * the form of string/synset. */
-	public List<String> query(String title, Logger logger) {
+	public List<String> query(String title, Logger logger, String language) {
 		for (String titleForm : cookedTitles(title)) {
-			List<String> results = queryTitleForm(titleForm, logger);
+			List<String> results = queryTitleForm(titleForm, logger, language);
 			if (!results.isEmpty())
 				return results;
 		}
@@ -49,8 +47,9 @@ public class DBpediaWNTypes extends DBpediaLookup {
 	}
 
 	/** Query for a given specific title form, returning a set
-	 * of types. The type is in the form of string/synset. */
-	public List<String> queryTitleForm(String title, Logger logger) {
+	 * of types. The type is in the form of string/synset.
+	 */
+	public List<String> queryTitleForm(String title, Logger logger, String language) {
 		/* XXX: Case-insensitive search via SPARQL turns out
 		 * to be surprisingly tricky.  Cover 91% of all cases
 		 * by capitalizing words that are not stopwords  */
@@ -60,11 +59,11 @@ public class DBpediaWNTypes extends DBpediaLookup {
 		String rawQueryStr =
 			"{\n" +
 			   // (A) fetch resources with @title label
-			"  ?res rdfs:label \"" + title + "\"@en.\n" +
+			"  ?res rdfs:label \"" + title + "\"@" + language + ".\n" +
 			"} UNION {\n" +
 			   // (B) fetch also resources targetted by @title redirect
 			"  ?redir dbo:wikiPageRedirects ?res .\n" +
-			"  ?redir rdfs:label \"" + title + "\"@en .\n" +
+			"  ?redir rdfs:label \"" + title + "\"@" + language + " .\n" +
 			"}\n" +
 			 // set the output variable
 			"?res dbpedia2:wordnet_type ?type .\n" +
@@ -83,7 +82,10 @@ public class DBpediaWNTypes extends DBpediaLookup {
 			String typeLabel = rawResult[0].getString().replaceAll("^synset-([^-]*)-.*$", "$1").replaceAll("_", " ");
 
 			try {
-				IndexWord w = dictionary.getIndexWord(net.sf.extjwnl.data.POS.NOUN, typeLabel);
+				IndexWord w = dictionaryMap.get(language).getIndexWord(net.sf.extjwnl.data.POS.NOUN, typeLabel);
+				if (w == null) {
+				    w = dictionaryMap.get("en").getIndexWord(net.sf.extjwnl.data.POS.NOUN, typeLabel);
+				}
 				Synset s = w.getSenses().get(senseIdx - 1);
 				long synset = s.getOffset();
 

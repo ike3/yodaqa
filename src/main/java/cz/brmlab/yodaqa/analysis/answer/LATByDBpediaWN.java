@@ -37,7 +37,7 @@ public class LATByDBpediaWN extends LATByDBpedia {
 	protected boolean addLATByLabel(JCas jcas, Focus focus, String label) throws AnalysisEngineProcessException {
 		StringBuilder typelist = new StringBuilder();
 
-		List<String> types = dbt.query(label, logger);
+		List<String> types = dbt.query(label, logger, jcas.getDocumentLanguage());
 
 		for (String type : types) {
 			addLATFeature(jcas, AF.LATDBpWNType);
