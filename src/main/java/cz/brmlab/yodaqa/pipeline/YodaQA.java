@@ -134,7 +134,7 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 			if (casDumpDo) {
 			    builder.add(AnalysisEngineFactory.createEngineDescription(
                         DumpCAS2File.class,
-                        DumpCAS2File.PARAM_SAVE_DIR, answerSaveDir,
+                        DumpCAS2File.PARAM_SAVE_DIR, casDumpDir,
                         DumpCAS2File.PARAM_SUFFIX, "QuestionAnalysisAE"));
 			}
 
@@ -144,7 +144,7 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
             if (casDumpDo) {
                 builder.add(AnalysisEngineFactory.createEngineDescription(
                         DumpCAS2File.class,
-                        DumpCAS2File.PARAM_SAVE_DIR, answerSaveDir,
+                        DumpCAS2File.PARAM_SAVE_DIR, casDumpDir,
                         DumpCAS2File.PARAM_SUFFIX, "AnswerProducerAE"));
             }
 
@@ -180,7 +180,7 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
         if (casDumpDo) {
             builder.add(AnalysisEngineFactory.createEngineDescription(
                     DumpCAS2File.class,
-                    DumpCAS2File.PARAM_SAVE_DIR, answerSaveDir,
+                    DumpCAS2File.PARAM_SAVE_DIR, casDumpDir,
                     DumpCAS2File.PARAM_SUFFIX, "AnswerAnalysisAE"));
         }
 
@@ -229,6 +229,13 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 			builder.add(evidenceDiffusion,
 				CAS.NAME_DEFAULT_SOFA, "AnswerHitlist");
 
+	        if (casDumpDo) {
+	            builder.add(AnalysisEngineFactory.createEngineDescription(
+	                    DumpCAS2File.class,
+	                    DumpCAS2File.PARAM_SAVE_DIR, casDumpDir,
+	                    DumpCAS2File.PARAM_SUFFIX, "AnswerAnalysisAE-0"));
+	        }
+
 		/* (Serialization / scoring point #1.) */
 		} else if (loadPhase == 1) {
 			System.err.println("l1");
@@ -247,13 +254,6 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 			AnalysisEngineDescription answerScoring = AnswerScoringAE.createEngineDescription("1");
 			builder.add(answerScoring);
 		}
-
-        if (casDumpDo) {
-            builder.add(AnalysisEngineFactory.createEngineDescription(
-                    DumpCAS2File.class,
-                    DumpCAS2File.PARAM_SAVE_DIR, answerSaveDir,
-                    DumpCAS2File.PARAM_SUFFIX, "AnswerAnalysisAE-0"));
-        }
 
 		if (answer1SaveDo)
 			return outputsNewCASes;
@@ -282,6 +282,13 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 					ParallelEngineFactory.PARAM_NO_MULTIPROCESSING, 1);
 			builder.add(answerCASMerger);
 
+	        if (casDumpDo) {
+	            builder.add(AnalysisEngineFactory.createEngineDescription(
+	                    DumpCAS2File.class,
+	                    DumpCAS2File.PARAM_SAVE_DIR, casDumpDir,
+	                    DumpCAS2File.PARAM_SUFFIX, "AnswerAnalysisAE-1"));
+	        }
+
 		/* (Serialization / scoring point #2.) */
 		} else if (loadPhase == 2) {
 			System.err.println("l2");
@@ -300,13 +307,6 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 			AnalysisEngineDescription answerScoring = AnswerScoringAE.createEngineDescription("2");
 			builder.add(answerScoring);
 		}
-
-        if (casDumpDo) {
-            builder.add(AnalysisEngineFactory.createEngineDescription(
-                    DumpCAS2File.class,
-                    DumpCAS2File.PARAM_SAVE_DIR, answerSaveDir,
-                    DumpCAS2File.PARAM_SUFFIX, "AnswerAnalysisAE-1"));
-        }
 
 		return outputsNewCASes;
 	}

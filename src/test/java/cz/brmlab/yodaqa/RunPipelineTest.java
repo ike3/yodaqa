@@ -18,9 +18,6 @@ public class RunPipelineTest {
     @Test
     public void run() throws Exception {
         System.setProperty("cz.brmlab.yodaqa.cas_dump_dir", dir);
-        System.setProperty("cz.brmlab.yodaqa.save_answerfvs", dir);
-        System.setProperty("cz.brmlab.yodaqa.save_answer1fvs", dir);
-        System.setProperty("cz.brmlab.yodaqa.save_answer2fvs", dir);
 
         AnalysisEngineDescription pipeline = YodaQA.createEngineDescription();
 
