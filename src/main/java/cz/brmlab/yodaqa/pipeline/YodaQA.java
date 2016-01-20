@@ -306,6 +306,13 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 		if (loadPhase <= 2) {
 			AnalysisEngineDescription answerScoring = AnswerScoringAE.createEngineDescription("2");
 			builder.add(answerScoring);
+
+            if (casDumpDo) {
+                builder.add(AnalysisEngineFactory.createEngineDescription(
+                        DumpCAS2File.class,
+                        DumpCAS2File.PARAM_SAVE_DIR, casDumpDir,
+                        DumpCAS2File.PARAM_SUFFIX, "AnswerAnalysisAE-2"));
+            }
 		}
 
 		return outputsNewCASes;
