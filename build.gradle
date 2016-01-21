@@ -19,6 +19,7 @@ apply plugin: 'groovy'
 mainClassName 		= 'cz.brmlab.yodaqa.YodaQA_Interactive'
 
 ext.dkproVersion	= '1.7.0'
+ext.uimaExtVersion	= '0.5-SNAPSHOT'
 
 run {
   standardInput = System.in
@@ -127,6 +128,7 @@ dependencies {
   compile("de.tudarmstadt.ukp.dkpro.core:de.tudarmstadt.ukp.dkpro.core.stanfordnlp-gpl:$dkproVersion") {
     exclude group: "com.io7m.xom", module: "xom"  // this dependency breaks XMI serialization by using utf16, c.f. UIMA-3818
   }
+  compile "ru.ksu.niimm.cll.uima:uima-ext-tokenizer-simple:$uimaExtVersion"
   compile "de.tudarmstadt.ukp.dkpro.core:de.tudarmstadt.ukp.dkpro.core.api.parameter-asl:$dkproVersion"
   compile 'org.apache.solr:solr-solrj:3.6.0'
   compile 'org.apache.solr:solr-core:3.6.0'
