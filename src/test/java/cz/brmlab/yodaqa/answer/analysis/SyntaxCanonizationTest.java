@@ -1,4 +1,4 @@
-package cz.brmlab.yodaqa.analysis;
+package cz.brmlab.yodaqa.answer.analysis;
 
 import static org.apache.uima.fit.factory.AnalysisEngineFactory.*;
 import static org.apache.uima.fit.factory.CollectionReaderFactory.createReaderDescription;

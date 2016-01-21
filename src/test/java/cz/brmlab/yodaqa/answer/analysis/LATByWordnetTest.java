@@ -1,4 +1,4 @@
-package cz.brmlab.yodaqa.analysis;
+package cz.brmlab.yodaqa.answer.analysis;
 
 import static org.apache.uima.fit.factory.AnalysisEngineFactory.*;
 import static org.apache.uima.fit.factory.CollectionReaderFactory.createReaderDescription;
@@ -17,17 +17,14 @@ import cz.brmlab.yodaqa.analysis.answer.*;
 import cz.brmlab.yodaqa.analysis.tycor.LATByWordnet;
 import cz.brmlab.yodaqa.flow.MultiCASPipeline;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerInfo;
-import cz.brmlab.yodaqa.model.Question.Focus;
 import cz.brmlab.yodaqa.model.TyCor.*;
 import de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.POS;
-import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
-import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.dependency.NUM;
 
 /*
- * Опирается на наличие аннотации NUM, причем она должна быть частью фокуса
  */
-public class LATByQuantityTest {
+public class LATByWordnetTest {
     private static String EXPECTED_OUTPUT;
+    private static String INPUT;
 
     public static class Tested extends SimpleQuestion {
 
@@ -42,25 +39,14 @@ public class LATByQuantityTest {
                 AnswerFV fv = new AnswerFV(ai);
                 ai.setFeatures(fv.toFSArray(jcas));
 
-                Token t = new Token(jcas, 0, 3);
-                t.addToIndexes(jcas);
+                LAT lat = new LAT(jcas);
+                lat.setLanguage(jcas.getDocumentLanguage());
+                lat.setText(INPUT);
+                lat.addToIndexes(jcas);
 
-                POS pos = new POS(jcas, 3, 10);
-                pos.setPosValue("CD");
-                pos.addToIndexes(jcas);
-
-                Token d = new Token(jcas, 3, 10);
-                d.setPos(pos);
-                d.addToIndexes(jcas);
-
-                Focus f = new Focus(jcas, 0, 10);
-                f.setToken(t);
-                f.addToIndexes(jcas);
-
-                NUM num = new NUM(jcas, 0, 3);
-                num.addToIndexes(jcas);
-                num.setGovernor(t);
-                num.setDependent(d);
+                POS pos = new POS(jcas);
+                pos.setPosValue("NN");
+                lat.setPos(pos);
 
             } catch (Exception e) {
                 throw new RuntimeException(e);
@@ -72,7 +58,7 @@ public class LATByQuantityTest {
         @Override
         public void process(JCas jcas) throws AnalysisEngineProcessException {
             try {
-                for (QuantityCDLAT lat : JCasUtil.select(jcas, QuantityCDLAT.class)) {
+                for (WordnetLAT lat : JCasUtil.select(jcas, WordnetLAT.class)) {
                     if (EXPECTED_OUTPUT.equals(lat.getText()))
                         return;
                 }
@@ -86,28 +72,30 @@ public class LATByQuantityTest {
     @Test
     public void runEN() throws Exception {
         AggregateBuilder builder = new AggregateBuilder();
-        builder.add(createPrimitiveDescription(LATByQuantity.class));
+        builder.add(createPrimitiveDescription(LATByWordnet.class));
 
         CollectionReaderDescription reader = createReaderDescription(
                 Tested.class,
                 SimpleQuestion.PARAM_LANGUAGE, "en",
-                SimpleQuestion.PARAM_INPUT, "240 meters");
+                SimpleQuestion.PARAM_INPUT, "игнор");
 
-        EXPECTED_OUTPUT = "measure";
+        INPUT = "sun";
+        EXPECTED_OUTPUT = "star";
         MultiCASPipeline.runPipeline(reader, builder.createAggregateDescription(), createEngineDescription(TestConsumer.class));
     }
 
     @Test
     public void runRU() throws Exception {
         AggregateBuilder builder = new AggregateBuilder();
-        builder.add(createPrimitiveDescription(LATByQuantity.class));
+        builder.add(createPrimitiveDescription(LATByWordnet.class));
 
         CollectionReaderDescription reader = createReaderDescription(
                 Tested.class,
                 SimpleQuestion.PARAM_LANGUAGE, "ru",
-                SimpleQuestion.PARAM_INPUT, "240 метров");
+                SimpleQuestion.PARAM_INPUT, "игнор");
 
-        EXPECTED_OUTPUT = "величина";
+        INPUT = "Солнце";
+        EXPECTED_OUTPUT = "божество";
         MultiCASPipeline.runPipeline(reader, builder.createAggregateDescription(), createEngineDescription(TestConsumer.class));
     }
 }

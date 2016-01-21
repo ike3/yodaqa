@@ -1,4 +1,4 @@
-package cz.brmlab.yodaqa.analysis;
+package cz.brmlab.yodaqa.answer.analysis;
 
 import static org.apache.uima.fit.factory.AnalysisEngineFactory.*;
 import static org.apache.uima.fit.factory.CollectionReaderFactory.createReaderDescription;
@@ -12,46 +12,29 @@ import org.apache.uima.jcas.JCas;
 import org.junit.*;
 
 import cz.brmlab.yodaqa.SimpleQuestion;
-import cz.brmlab.yodaqa.analysis.ansscore.*;
+import cz.brmlab.yodaqa.analysis.ansscore.AnswerFV;
 import cz.brmlab.yodaqa.analysis.answer.*;
-import cz.brmlab.yodaqa.analysis.tycor.*;
 import cz.brmlab.yodaqa.flow.MultiCASPipeline;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerInfo;
 import cz.brmlab.yodaqa.model.TyCor.*;
-import de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.POS;
 
 /*
- * Сравнивает LATs вопроса и ответа. Берет только WordnetLAT!
- * Устанавливает AF.SpWordNet в e^spec в случае совпадения
- * текст LAT должен быть полностью идентичным
  */
-public class LATMatchTyCorTest {
+public class LATByDBpediaWNTest {
+    private static String EXPECTED_OUTPUT;
 
     public static class Tested extends SimpleQuestion {
-
 
         public void initCas(JCas jcas) {
             try {
                 super.initCas(jcas);
 
-                JCas qView = jcas.createView("Question");
-                JCas aView = jcas.createView("Answer");
-
-                AnswerInfo ai = new AnswerInfo(aView);
+                AnswerInfo ai = new AnswerInfo(jcas);
                 ai.setCanonText("правило правая нога ппн");
-                ai.addToIndexes(aView);
+                ai.addToIndexes(jcas);
                 AnswerFV fv = new AnswerFV(ai);
-                ai.setFeatures(fv.toFSArray(aView));
+                ai.setFeatures(fv.toFSArray(jcas));
 
-                WordnetLAT qlat = new WordnetLAT(qView);
-                qlat.setText("lat1");
-                qlat.setSpecificity(0.4);
-                qlat.addToIndexes(qView);
-
-                WordnetLAT alat = new WordnetLAT(aView);
-                alat.setText("lat1");
-                alat.setSpecificity(0.6);
-                alat.addToIndexes(aView);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -62,9 +45,11 @@ public class LATMatchTyCorTest {
         @Override
         public void process(JCas jcas) throws AnalysisEngineProcessException {
             try {
-                AnswerInfo ai = JCasUtil.selectSingle(jcas.getView("Answer"), AnswerInfo.class);
-                AnswerFV fv = new AnswerFV(ai);
-                Assert.assertEquals(Math.exp(1.0), fv.getFeatureValue(AF.SpWordNet), 0.1);
+                for (DBpWNLAT lat : JCasUtil.select(jcas, DBpWNLAT.class)) {
+                    if (EXPECTED_OUTPUT.equals(lat.getText()))
+                        return;
+                }
+                Assert.fail();
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -72,15 +57,30 @@ public class LATMatchTyCorTest {
     }
 
     @Test
-    public void run() throws Exception {
+    public void runEN() throws Exception {
         AggregateBuilder builder = new AggregateBuilder();
-        builder.add(createPrimitiveDescription(LATMatchTyCor.class));
+        builder.add(createPrimitiveDescription(LATByDBpediaWN.class));
 
         CollectionReaderDescription reader = createReaderDescription(
                 Tested.class,
                 SimpleQuestion.PARAM_LANGUAGE, "en",
-                SimpleQuestion.PARAM_INPUT, "игнор");
+                SimpleQuestion.PARAM_INPUT, "Ciber");
 
+        EXPECTED_OUTPUT = "company";
+        MultiCASPipeline.runPipeline(reader, builder.createAggregateDescription(), createEngineDescription(TestConsumer.class));
+    }
+
+    @Test
+    public void runRU() throws Exception {
+        AggregateBuilder builder = new AggregateBuilder();
+        builder.add(createPrimitiveDescription(LATByDBpediaWN.class));
+
+        CollectionReaderDescription reader = createReaderDescription(
+                Tested.class,
+                SimpleQuestion.PARAM_LANGUAGE, "ru",
+                SimpleQuestion.PARAM_INPUT, "Маликов, Дмитрий Юрьевич");
+
+        EXPECTED_OUTPUT = "musician";
         MultiCASPipeline.runPipeline(reader, builder.createAggregateDescription(), createEngineDescription(TestConsumer.class));
     }
 }

@@ -1,4 +1,4 @@
-package cz.brmlab.yodaqa.analysis;
+package cz.brmlab.yodaqa.answer.analysis;
 
 import static org.apache.uima.fit.factory.AnalysisEngineFactory.*;
 import static org.apache.uima.fit.factory.CollectionReaderFactory.createReaderDescription;
@@ -19,8 +19,32 @@ import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerInfo;
 import cz.brmlab.yodaqa.model.TyCor.*;
 
 /*
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX dc: <http://purl.org/dc/elements/1.1/>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX : <http://dbpedia.org/resource/>
+PREFIX dbpedia2: <http://dbpedia.org/property/>
+PREFIX dbpedia: <http://dbpedia.org/>
+PREFIX dbo: <http://dbpedia.org/ontology/>
+SELECT ?type ?superType WHERE { {
+  ?res rdfs:label "Солнце"@ru.
+} UNION {
+  ?redir dbo:wikiPageRedirects ?res .
+  ?redir rdfs:label "Солнце"@ru .
+}
+?res rdf:type ?type .
+OPTIONAL {
+  ?type rdfs:subClassOf ?superType .
+}
+FILTER ( regex(str(?res), '^http://dbpedia.org/resource/', 'i') )
+FILTER ( !regex(str(?res), '^http://dbpedia.org/resource/[^_]*:', 'i') )
+}
  */
-public class LATByDBpediaWNTest {
+public class LATByDBpediaTest {
     private static String EXPECTED_OUTPUT;
 
     public static class Tested extends SimpleQuestion {
@@ -45,7 +69,7 @@ public class LATByDBpediaWNTest {
         @Override
         public void process(JCas jcas) throws AnalysisEngineProcessException {
             try {
-                for (DBpWNLAT lat : JCasUtil.select(jcas, DBpWNLAT.class)) {
+                for (DBpLAT lat : JCasUtil.select(jcas, DBpLAT.class)) {
                     if (EXPECTED_OUTPUT.equals(lat.getText()))
                         return;
                 }
@@ -59,28 +83,28 @@ public class LATByDBpediaWNTest {
     @Test
     public void runEN() throws Exception {
         AggregateBuilder builder = new AggregateBuilder();
-        builder.add(createPrimitiveDescription(LATByDBpediaWN.class));
+        builder.add(createPrimitiveDescription(LATByDBpedia.class));
 
         CollectionReaderDescription reader = createReaderDescription(
                 Tested.class,
                 SimpleQuestion.PARAM_LANGUAGE, "en",
-                SimpleQuestion.PARAM_INPUT, "Ciber");
+                SimpleQuestion.PARAM_INPUT, "sun");
 
-        EXPECTED_OUTPUT = "company";
+        EXPECTED_OUTPUT = "star";
         MultiCASPipeline.runPipeline(reader, builder.createAggregateDescription(), createEngineDescription(TestConsumer.class));
     }
 
     @Test
     public void runRU() throws Exception {
         AggregateBuilder builder = new AggregateBuilder();
-        builder.add(createPrimitiveDescription(LATByDBpediaWN.class));
+        builder.add(createPrimitiveDescription(LATByDBpedia.class));
 
         CollectionReaderDescription reader = createReaderDescription(
                 Tested.class,
                 SimpleQuestion.PARAM_LANGUAGE, "ru",
-                SimpleQuestion.PARAM_INPUT, "Маликов, Дмитрий Юрьевич");
+                SimpleQuestion.PARAM_INPUT, "солнце");
 
-        EXPECTED_OUTPUT = "musician";
+        EXPECTED_OUTPUT = "star";
         MultiCASPipeline.runPipeline(reader, builder.createAggregateDescription(), createEngineDescription(TestConsumer.class));
     }
 }
