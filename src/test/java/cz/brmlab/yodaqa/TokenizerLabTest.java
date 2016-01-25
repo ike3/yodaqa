@@ -19,6 +19,7 @@ import org.junit.*;
 import cz.brmlab.yodaqa.flow.MultiCASPipeline;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
 import de.tudarmstadt.ukp.dkpro.core.opennlp.OpenNlpSegmenter;
+import de.tudarmstadt.ukp.dkpro.core.tokit.BreakIteratorSegmenter;
 import ru.kfu.cll.uima.tokenizer.fstype.SW;
 import ru.kfu.itis.issst.uima.morph.dictionary.MorphDictionaryAPIFactory;
 import ru.kfu.itis.issst.uima.morph.lemmatizer.Lemmatizer;
@@ -113,6 +114,21 @@ public class TokenizerLabTest {
         EXPECTED_CLASS = Token.class;
         EXPECTED_OUTPUT = "";
 
+        MultiCASPipeline.runPipeline(reader, builder.createAggregateDescription(), createEngineDescription(TestConsumer.class));
+    }
+
+    @Test
+    public void breakIteratorSegmenter() throws Exception {
+        AggregateBuilder builder = new AggregateBuilder();
+        builder.add(createPrimitiveDescription(BreakIteratorSegmenter.class));
+
+        CollectionReaderDescription reader = createReaderDescription(
+                Tested.class,
+                SimpleQuestion.PARAM_LANGUAGE, "ru",
+                SimpleQuestion.PARAM_INPUT, "Большие земли начинаются с маленьких.");
+
+        EXPECTED_CLASS = Token.class;
+        EXPECTED_OUTPUT = ".,Большие,земли,маленьких,начинаются,с";
         MultiCASPipeline.runPipeline(reader, builder.createAggregateDescription(), createEngineDescription(TestConsumer.class));
     }
 }
