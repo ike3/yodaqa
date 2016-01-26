@@ -14,9 +14,12 @@ import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
 import org.apache.uima.resource.ExternalResourceDescription;
+import org.dbpedia.spotlight.uima.SpotlightNameFinder;
 import org.junit.*;
 
 import cz.brmlab.yodaqa.flow.MultiCASPipeline;
+import cz.brmlab.yodaqa.provider.SyncOpenNlpNameFinder;
+import de.tudarmstadt.ukp.dkpro.core.api.ner.type.NamedEntity;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
 import de.tudarmstadt.ukp.dkpro.core.opennlp.OpenNlpSegmenter;
 import de.tudarmstadt.ukp.dkpro.core.tokit.BreakIteratorSegmenter;
@@ -129,6 +132,39 @@ public class TokenizerLabTest {
 
         EXPECTED_CLASS = Token.class;
         EXPECTED_OUTPUT = ".,Большие,земли,маленьких,начинаются,с";
+        MultiCASPipeline.runPipeline(reader, builder.createAggregateDescription(), createEngineDescription(TestConsumer.class));
+    }
+
+    @Test
+    public void openNlpNameFinderEN() throws Exception {
+        AggregateBuilder builder = new AggregateBuilder();
+        builder.add(createPrimitiveDescription(BreakIteratorSegmenter.class));
+        builder.add(createPrimitiveDescription(SyncOpenNlpNameFinder.class));
+
+        CollectionReaderDescription reader = createReaderDescription(
+                Tested.class,
+                SimpleQuestion.PARAM_LANGUAGE, "en",
+                SimpleQuestion.PARAM_INPUT, "Harry Potter");
+
+        EXPECTED_CLASS = NamedEntity.class;
+        EXPECTED_OUTPUT = "Harry Potter";
+        MultiCASPipeline.runPipeline(reader, builder.createAggregateDescription(), createEngineDescription(TestConsumer.class));
+    }
+
+    @Test
+    public void openNlpNameFinderRu() throws Exception {
+        AggregateBuilder builder = new AggregateBuilder();
+        builder.add(createPrimitiveDescription(
+                SpotlightNameFinder.class,
+                SpotlightNameFinder.PARAM_ENDPOINT, "http://spotlight.sztaki.hu:2227/rest/annotate"));
+
+        CollectionReaderDescription reader = createReaderDescription(
+                Tested.class,
+                SimpleQuestion.PARAM_LANGUAGE, "ru",
+                SimpleQuestion.PARAM_INPUT, "Берлин");
+
+        EXPECTED_CLASS = NamedEntity.class;
+        EXPECTED_OUTPUT = "Берлин";
         MultiCASPipeline.runPipeline(reader, builder.createAggregateDescription(), createEngineDescription(TestConsumer.class));
     }
 }

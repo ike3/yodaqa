@@ -133,6 +133,7 @@ dependencies {
   compile "ru.ksu.niimm.cll.uima:uima-ext-sentence-splitter-heuristic:$uimaExtVersion"
   compile "ru.ksu.niimm.cll.uima:uima-ext-lemmatizer-opencorpora:$uimaExtVersion"
   compile "de.tudarmstadt.ukp.dkpro.core:de.tudarmstadt.ukp.dkpro.core.api.parameter-asl:$dkproVersion"
+  compile "org.dbpedia.spotlight:uima:0.7"
   compile 'org.apache.solr:solr-solrj:3.6.0'
   compile 'org.apache.solr:solr-core:3.6.0'
   compile 'org.apache.httpcomponents:httpmime:4.2.1'
