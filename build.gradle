@@ -125,6 +125,8 @@ dependencies {
   compile "de.tudarmstadt.ukp.dkpro.core:de.tudarmstadt.ukp.dkpro.core.tokit-asl:$dkproVersion"
   compile "de.tudarmstadt.ukp.dkpro.core:de.tudarmstadt.ukp.dkpro.core.berkeleyparser-gpl:$dkproVersion"
   compile "de.tudarmstadt.ukp.dkpro.core:de.tudarmstadt.ukp.dkpro.core.matetools-gpl:$dkproVersion"
+  compile "de.tudarmstadt.ukp.dkpro.core:de.tudarmstadt.ukp.dkpro.core.treetagger-asl:$dkproVersion"
+  compile files('libs/de.tudarmstadt.ukp.dkpro.core.treetagger-model-tagger-ru-le.jar')
   compile("de.tudarmstadt.ukp.dkpro.core:de.tudarmstadt.ukp.dkpro.core.stanfordnlp-gpl:$dkproVersion") {
     exclude group: "com.io7m.xom", module: "xom"  // this dependency breaks XMI serialization by using utf16, c.f. UIMA-3818
   }

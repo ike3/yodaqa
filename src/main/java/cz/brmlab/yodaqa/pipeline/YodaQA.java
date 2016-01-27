@@ -1,5 +1,6 @@
 package cz.brmlab.yodaqa.pipeline;
 
+import cz.brmlab.yodaqa.analysis.question.QuestionAnalysisEngineRu;
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.fit.factory.AggregateBuilder;
@@ -116,6 +117,7 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 		boolean answer2SaveDo = answer2SaveDir != null && !answer2SaveDir.isEmpty();
 		String answer2LoadDir = System.getProperty("cz.brmlab.yodaqa.load_answer2fvs");
 		boolean answer2LoadDo = answer2LoadDir != null && !answer2LoadDir.isEmpty();
+		boolean isRuPipline = Boolean.valueOf(System.getProperty("cz.brmlab.yodaqa.pipline_ru"));
 
 		int loadPhase = -1;
 		if (answerLoadDo) loadPhase = 0;
@@ -128,7 +130,14 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 			System.err.println("0");
 			outputsNewCASes = true;
 
-			AnalysisEngineDescription questionAnalysis = QuestionAnalysisAE.createEngineDescription();
+			AnalysisEngineDescription questionAnalysis = null;
+
+			if(!isRuPipline) {
+				questionAnalysis = QuestionAnalysisAE.createEngineDescription();
+			} else {
+				questionAnalysis = QuestionAnalysisEngineRu.createEngineDescription();
+			}
+
 			builder.add(questionAnalysis);
 
 			if (casDumpDo) {
