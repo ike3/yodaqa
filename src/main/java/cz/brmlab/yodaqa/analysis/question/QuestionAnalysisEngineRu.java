@@ -9,6 +9,7 @@ import org.apache.uima.fit.component.CasDumpWriter;
 import org.apache.uima.fit.factory.AggregateBuilder;
 import org.apache.uima.fit.factory.AnalysisEngineFactory;
 import org.apache.uima.resource.ResourceInitializationException;
+import org.dbpedia.spotlight.uima.SpotlightNameFinder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,6 +25,11 @@ public class QuestionAnalysisEngineRu {
         builder.add(AnalysisEngineFactory.createEngineDescription(TreeTaggerPosTagger.class));
         //Dependency tagging
         builder.add(AnalysisEngineFactory.createEngineDescription(MaltParser.class));
+        //NameFinder
+        builder.add(AnalysisEngineFactory.createEngineDescription(
+                SpotlightNameFinder.class,
+                SpotlightNameFinder.PARAM_ENDPOINT, System.getProperty("cz.brmlab.yodaqa.spotlight_name_finder_endpoint")
+        ));
 
         if (logger.isDebugEnabled()) {
             builder.add(AnalysisEngineFactory.createEngineDescription(DumpConstituents.class));

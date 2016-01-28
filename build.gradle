@@ -138,6 +138,7 @@ dependencies {
   }
   compile "de.tudarmstadt.ukp.dkpro.core:de.tudarmstadt.ukp.dkpro.core.api.parameter-asl:$dkproVersion"
   compile "org.dbpedia.spotlight:uima:0.7"
+  compile 'javax.ws.rs:javax.ws.rs-api:2.0.1'
   compile 'org.apache.solr:solr-solrj:3.6.0'
   compile 'org.apache.solr:solr-core:3.6.0'
   compile 'org.apache.httpcomponents:httpmime:4.2.1'
