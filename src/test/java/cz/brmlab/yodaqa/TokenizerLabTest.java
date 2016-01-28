@@ -20,9 +20,10 @@ import org.junit.*;
 import cz.brmlab.yodaqa.flow.MultiCASPipeline;
 import cz.brmlab.yodaqa.provider.SyncOpenNlpNameFinder;
 import de.tudarmstadt.ukp.dkpro.core.api.ner.type.NamedEntity;
-import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
+import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.*;
 import de.tudarmstadt.ukp.dkpro.core.opennlp.OpenNlpSegmenter;
 import de.tudarmstadt.ukp.dkpro.core.tokit.BreakIteratorSegmenter;
+import de.tudarmstadt.ukp.dkpro.core.treetagger.TreeTaggerPosTagger;
 import ru.kfu.cll.uima.tokenizer.fstype.SW;
 import ru.kfu.itis.issst.uima.morph.dictionary.MorphDictionaryAPIFactory;
 import ru.kfu.itis.issst.uima.morph.lemmatizer.Lemmatizer;
@@ -62,76 +63,19 @@ public class TokenizerLabTest {
     }
 
     @Test
-    public void simpleTokenizer() throws Exception {
+    public void posTagger() throws Exception {
         AggregateBuilder builder = new AggregateBuilder();
-        builder.add(createPrimitiveDescription(InitialTokenizer.class));
-        builder.add(createPrimitiveDescription(PostTokenizer.class));
+        builder.add(AnalysisEngineFactory.createEngineDescription(BreakIteratorSegmenter.class));
+        builder.add(AnalysisEngineFactory.createEngineDescription(TreeTaggerPosTagger.class));
 
         CollectionReaderDescription reader = createReaderDescription(
                 Tested.class,
                 SimpleQuestion.PARAM_LANGUAGE, "ru",
-                SimpleQuestion.PARAM_INPUT, "Большие земли начинаются с маленьких.");
-
-        EXPECTED_CLASS = SW.class;
-        EXPECTED_OUTPUT = "земли,маленьких,начинаются,с";
-        MultiCASPipeline.runPipeline(reader, builder.createAggregateDescription(), createEngineDescription(TestConsumer.class));
-    }
-
-    @Test
-    public void openNlpSegmenter() throws Exception {
-        AggregateBuilder builder = new AggregateBuilder();
-        builder.add(createPrimitiveDescription(OpenNlpSegmenter.class));
-
-        CollectionReaderDescription reader = createReaderDescription(
-                Tested.class,
-                SimpleQuestion.PARAM_LANGUAGE, "en",
-                SimpleQuestion.PARAM_INPUT, "big lands");
-
-        EXPECTED_CLASS = Token.class;
-        EXPECTED_OUTPUT = "big,lands";
-        MultiCASPipeline.runPipeline(reader, builder.createAggregateDescription(), createEngineDescription(TestConsumer.class));
-    }
-
-    @Test
-    @Ignore
-    /*
-     * Для запуска нужно положить dict.opcorpora.ser в корень yodaqa
-     */
-    public void lemmatizer() throws Exception {
-        AggregateBuilder builder = new AggregateBuilder();
-        builder.add(createPrimitiveDescription(InitialTokenizer.class));
-        builder.add(createPrimitiveDescription(PostTokenizer.class));
-        builder.add(createPrimitiveDescription(SentenceSplitter.class));
-        // TODO: Нужен парсер, который бы аннотировал нам org.opencorpora.cas.Word
-        AnalysisEngineDescription desc = createPrimitiveDescription(Lemmatizer.class);
-        //MorphDictionary morphDict = MorphDictionaryAPIFactory.getMorphDictionaryAPI().getCachedInstance().getResource();
-        ExternalResourceDescription morphDictDesc = MorphDictionaryAPIFactory.getMorphDictionaryAPI().getResourceDescriptionForCachedInstance();
-        ExternalResourceFactory.bindExternalResource(desc, "morphDictionary", morphDictDesc);
-        builder.add(desc);
-
-        CollectionReaderDescription reader = createReaderDescription(
-                Tested.class,
-                SimpleQuestion.PARAM_LANGUAGE, "en",
                 SimpleQuestion.PARAM_INPUT, "большие земли начинаются с маленьких");
 
-        EXPECTED_CLASS = Token.class;
-        EXPECTED_OUTPUT = "";
+        EXPECTED_CLASS = Lemma.class;
+        EXPECTED_OUTPUT = "большие,земли,маленьких,начинаются,с";
 
-        MultiCASPipeline.runPipeline(reader, builder.createAggregateDescription(), createEngineDescription(TestConsumer.class));
-    }
-
-    @Test
-    public void breakIteratorSegmenter() throws Exception {
-        AggregateBuilder builder = new AggregateBuilder();
-        builder.add(createPrimitiveDescription(BreakIteratorSegmenter.class));
-
-        CollectionReaderDescription reader = createReaderDescription(
-                Tested.class,
-                SimpleQuestion.PARAM_LANGUAGE, "ru",
-                SimpleQuestion.PARAM_INPUT, "Большие земли начинаются с маленьких.");
-
-        EXPECTED_CLASS = Token.class;
-        EXPECTED_OUTPUT = ".,Большие,земли,маленьких,начинаются,с";
         MultiCASPipeline.runPipeline(reader, builder.createAggregateDescription(), createEngineDescription(TestConsumer.class));
     }
 
