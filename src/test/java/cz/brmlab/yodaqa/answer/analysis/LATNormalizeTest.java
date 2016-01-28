@@ -65,6 +65,7 @@ public class LATNormalizeTest {
     }
 
     @Test
+    @Ignore
     public void runRU() throws Exception {
         AggregateBuilder builder = new AggregateBuilder();
         builder.add(createPrimitiveDescription(LATNormalize.class));

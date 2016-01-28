@@ -25,10 +25,6 @@ import de.tudarmstadt.ukp.dkpro.core.opennlp.OpenNlpSegmenter;
 import de.tudarmstadt.ukp.dkpro.core.tokit.BreakIteratorSegmenter;
 import de.tudarmstadt.ukp.dkpro.core.treetagger.TreeTaggerPosTagger;
 import ru.kfu.cll.uima.tokenizer.fstype.SW;
-import ru.kfu.itis.issst.uima.morph.dictionary.MorphDictionaryAPIFactory;
-import ru.kfu.itis.issst.uima.morph.lemmatizer.Lemmatizer;
-import ru.kfu.itis.issst.uima.segmentation.SentenceSplitter;
-import ru.kfu.itis.issst.uima.tokenizer.*;
 
 public class TokenizerLabTest {
     private static String EXPECTED_OUTPUT;
