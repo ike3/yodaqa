@@ -120,13 +120,19 @@ dependencies {
   compile "de.tudarmstadt.ukp.dkpro.core:de.tudarmstadt.ukp.dkpro.core.api.io-asl:$dkproVersion"
   compile "de.tudarmstadt.ukp.dkpro.core:de.tudarmstadt.ukp.dkpro.core.clearnlp-asl:$dkproVersion"
   compile "de.tudarmstadt.ukp.dkpro.core:de.tudarmstadt.ukp.dkpro.core.languagetool-asl:$dkproVersion"
-  compile "de.tudarmstadt.ukp.dkpro.core:de.tudarmstadt.ukp.dkpro.core.maltparser-asl:$dkproVersion"
   compile "de.tudarmstadt.ukp.dkpro.core:de.tudarmstadt.ukp.dkpro.core.opennlp-asl:$dkproVersion"
   compile "de.tudarmstadt.ukp.dkpro.core:de.tudarmstadt.ukp.dkpro.core.tokit-asl:$dkproVersion"
   compile "de.tudarmstadt.ukp.dkpro.core:de.tudarmstadt.ukp.dkpro.core.berkeleyparser-gpl:$dkproVersion"
   compile "de.tudarmstadt.ukp.dkpro.core:de.tudarmstadt.ukp.dkpro.core.matetools-gpl:$dkproVersion"
   compile "de.tudarmstadt.ukp.dkpro.core:de.tudarmstadt.ukp.dkpro.core.treetagger-asl:$dkproVersion"
   compile files('libs/de.tudarmstadt.ukp.dkpro.core.treetagger-model-tagger-ru-le.jar')
+  compile ("de.tudarmstadt.ukp.dkpro.core:de.tudarmstadt.ukp.dkpro.core.maltparser-asl:1.5.0") {
+    //  Dependency tagging model trained on MaltParser 1.5, so current maltparser(1.7.2) is excluded.
+    //  Own added into libs folder
+    exclude module: 'maltparser'
+  }
+  compile files('libs/maltparser-1.5.1.jar')
+  compile files('libs/de.tudarmstadt.ukp.dkpro.core.maltparser-model-parser-ru-linear.jar')
   compile("de.tudarmstadt.ukp.dkpro.core:de.tudarmstadt.ukp.dkpro.core.stanfordnlp-gpl:$dkproVersion") {
     exclude group: "com.io7m.xom", module: "xom"  // this dependency breaks XMI serialization by using utf16, c.f. UIMA-3818
   }
