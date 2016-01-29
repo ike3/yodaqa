@@ -2,6 +2,7 @@ package cz.brmlab.yodaqa.analysis;
 
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.regex.Pattern;
 
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.*;
@@ -10,6 +11,7 @@ import org.apache.uima.impl.AnalysisEngineFactory_impl;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.slf4j.*;
+
 
 public abstract class MultiLanguageParser extends JCasAnnotator_ImplBase {
 	final Logger logger = LoggerFactory.getLogger(MultiLanguageParser.class);
@@ -42,6 +44,22 @@ public abstract class MultiLanguageParser extends JCasAnnotator_ImplBase {
     		}
     		entry.getValue().destroy();
 	    }
+	}
+
+	public static String getLanguage(String text) {
+	    Pattern ruPattern = Pattern.compile(
+	            "[" +                   //начало списка допустимых символов
+	                    "а-яА-ЯёЁ" +    //буквы русского алфавита
+	                    "\\d" +         //цифры
+	                    "\\s" +         //знаки-разделители (пробел, табуляция и т.д.)
+	                    "\\p{Punct}" +  //знаки пунктуации
+	            "]" +                   //конец списка допустимых символов
+	            "*");                   //допускается наличие указанных символов в любом количестве
+	    if (ruPattern.matcher(text).matches()) {
+	        return "ru";
+	    }
+
+	    return "en";
 	}
 }
 

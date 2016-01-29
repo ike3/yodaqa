@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cz.brmlab.yodaqa.analysis.ansscore.AnswerFV;
+import cz.brmlab.yodaqa.analysis.MultiLanguageParser;
 import cz.brmlab.yodaqa.analysis.ansscore.AF;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerInfo;
@@ -105,7 +106,7 @@ public class LATByDBpedia extends JCasAnnotator_ImplBase {
 
 		for (String type : types) {
 			addLATFeature(jcas, AF.LATDBpType);
-			addTypeLAT(jcas, new DBpLAT(jcas), focus, type, 0, typelist);
+			addTypeLAT(jcas, new DBpLAT(jcas), focus, type, 0, typelist, MultiLanguageParser.getLanguage(label));
 		}
 
 		if (typelist.length() > 0) {
@@ -119,7 +120,7 @@ public class LATByDBpedia extends JCasAnnotator_ImplBase {
 		}
 	}
 
-	protected void addTypeLAT(JCas jcas, LAT lat, Focus focus, String type, long synset, StringBuilder typelist) throws AnalysisEngineProcessException {
+	protected void addTypeLAT(JCas jcas, LAT lat, Focus focus, String type, long synset, StringBuilder typelist, String language) throws AnalysisEngineProcessException {
 		String ntype = type.toLowerCase();
 
 		/* We have a synthetic noun(-ish), synthetize
@@ -138,7 +139,7 @@ public class LATByDBpedia extends JCasAnnotator_ImplBase {
 		pos.setPosValue("NNS");
 		pos.addToIndexes();
 
-		addLAT(lat, LATBase.getBegin(), LATBase.getEnd(), LATBase, ntype, pos, synset, 0.0, jcas.getDocumentLanguage());
+		addLAT(lat, LATBase.getBegin(), LATBase.getEnd(), LATBase, ntype, pos, synset, 0.0, language);
 
 		if (synset == 0) {
 			typelist.append(" | " + ntype);
