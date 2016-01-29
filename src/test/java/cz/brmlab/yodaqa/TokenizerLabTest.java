@@ -101,10 +101,10 @@ public class TokenizerLabTest {
         CollectionReaderDescription reader = createReaderDescription(
                 Tested.class,
                 SimpleQuestion.PARAM_LANGUAGE, "ru",
-                SimpleQuestion.PARAM_INPUT, "Берлин");
+                SimpleQuestion.PARAM_INPUT, "Гарри Поттера");
 
         EXPECTED_CLASS = NamedEntity.class;
-        EXPECTED_OUTPUT = "Берлин";
+        EXPECTED_OUTPUT = "Гарри Поттера";
         MultiCASPipeline.runPipeline(reader, builder.createAggregateDescription(), createEngineDescription(TestConsumer.class));
     }
 }

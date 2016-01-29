@@ -15,7 +15,7 @@ import org.slf4j.*;
 
 import com.sun.jersey.api.client.*;
 
-import cz.brmlab.yodaqa.provider.rdf.DBpediaTypes;
+import cz.brmlab.yodaqa.provider.rdf.*;
 import de.tudarmstadt.ukp.dkpro.core.api.ner.type.NamedEntity;
 
 
@@ -149,21 +149,24 @@ public class SpotlightNameFinder extends JCasAnnotator_ImplBase {
 				}
 			}while(retry);
 
-					LOG.info("Server request completed. Writing to the index");
+					LOG.info("Server request completed. {} resources found", response.getResources().size());
 					/*
 					 * Add the results to the AnnotationIndex
 					 */
 					for (Resource resource : response.getResources()) {
                         int begin = documentOffset + new Integer(resource.getOffset());
                         int end = begin + resource.getSurfaceForm().length();
-                        String label = documentText.substring(begin, end);
+                        String label = extractLabel(resource.getURI());
+                        if (label == null) {
+                            label = aJCas.getDocumentText().substring(begin, end);
+                        }
 
-				        String variant = queryDbp(aJCas, label);
-				        if (variant != null) {
-    	                    NamedEntity ne = new NamedEntity(aJCas, begin, end);
-    	                    ne.setValue(variant);
-    	                    ne.addToIndexes(aJCas);
-				        }
+                        String variant = queryDbp(aJCas, label);
+                        if (variant != null) {
+                            NamedEntity ne = new NamedEntity(aJCas, begin, end);
+                            ne.setValue(variant);
+                            ne.addToIndexes(aJCas);
+                        }
 
 						/*JCasResource res = new JCasResource(aJCas);
 						res.setBegin(begin);
@@ -185,6 +188,15 @@ public class SpotlightNameFinder extends JCasAnnotator_ImplBase {
 			e.printStackTrace();
 		}
 	}
+
+    private String extractLabel(String uri) {
+        int pos = uri.lastIndexOf('/');
+        if (pos == -1) {
+            return null;
+        }
+
+        return uri.substring(pos + 1).replace('_', ' ');
+    }
 
     private String queryDbp(JCas aJCas, String label) {
         List<String> types = dbt.query(label, LOG, aJCas.getDocumentLanguage());
