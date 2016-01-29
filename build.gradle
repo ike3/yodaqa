@@ -131,6 +131,7 @@ dependencies {
     //  Own added into libs folder
     exclude module: 'maltparser'
   }
+  compile files('libs/liblinear-1.7-with-deps.jar')
   compile files('libs/maltparser-1.5.1.jar')
   compile files('libs/de.tudarmstadt.ukp.dkpro.core.maltparser-model-parser-ru-linear.jar')
   compile("de.tudarmstadt.ukp.dkpro.core:de.tudarmstadt.ukp.dkpro.core.stanfordnlp-gpl:$dkproVersion") {
