@@ -1,30 +1,30 @@
 package cz.brmlab.yodaqa;
 
-import static org.apache.uima.fit.factory.AnalysisEngineFactory.*;
-import static org.apache.uima.fit.factory.CollectionReaderFactory.createReaderDescription;
-
-import java.util.*;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.uima.analysis_engine.*;
-import org.apache.uima.collection.CollectionReaderDescription;
-import org.apache.uima.fit.component.JCasConsumer_ImplBase;
-import org.apache.uima.fit.factory.*;
-import org.apache.uima.fit.util.JCasUtil;
-import org.apache.uima.jcas.JCas;
-import org.apache.uima.jcas.tcas.Annotation;
-import org.apache.uima.resource.ExternalResourceDescription;
-import org.dbpedia.spotlight.uima.SpotlightNameFinder;
-import org.junit.*;
-
 import cz.brmlab.yodaqa.flow.MultiCASPipeline;
 import cz.brmlab.yodaqa.provider.SyncOpenNlpNameFinder;
 import de.tudarmstadt.ukp.dkpro.core.api.ner.type.NamedEntity;
-import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.*;
-import de.tudarmstadt.ukp.dkpro.core.opennlp.OpenNlpSegmenter;
+import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Lemma;
 import de.tudarmstadt.ukp.dkpro.core.tokit.BreakIteratorSegmenter;
 import de.tudarmstadt.ukp.dkpro.core.treetagger.TreeTaggerPosTagger;
-import ru.kfu.cll.uima.tokenizer.fstype.SW;
+import org.apache.commons.lang.StringUtils;
+import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
+import org.apache.uima.collection.CollectionReaderDescription;
+import org.apache.uima.fit.component.JCasConsumer_ImplBase;
+import org.apache.uima.fit.factory.AggregateBuilder;
+import org.apache.uima.fit.factory.AnalysisEngineFactory;
+import org.apache.uima.fit.util.JCasUtil;
+import org.apache.uima.jcas.JCas;
+import org.apache.uima.jcas.tcas.Annotation;
+import org.dbpedia.spotlight.uima.SpotlightNameFinder;
+import org.junit.Assert;
+import org.junit.Test;
+
+import java.util.Set;
+import java.util.TreeSet;
+
+import static org.apache.uima.fit.factory.AnalysisEngineFactory.createEngineDescription;
+import static org.apache.uima.fit.factory.AnalysisEngineFactory.createPrimitiveDescription;
+import static org.apache.uima.fit.factory.CollectionReaderFactory.createReaderDescription;
 
 public class TokenizerLabTest {
     private static String EXPECTED_OUTPUT;
