@@ -1,23 +1,19 @@
 package cz.brmlab.yodaqa.analysis.answer;
 
+import static org.apache.uima.fit.factory.AnalysisEngineFactory.createPrimitiveDescription;
+
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.fit.component.CasDumpWriter;
-import org.apache.uima.fit.factory.AggregateBuilder;
-import org.apache.uima.fit.factory.AnalysisEngineFactory;
+import org.apache.uima.fit.factory.*;
 import org.apache.uima.resource.ResourceInitializationException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.slf4j.*;
 
-import cz.brmlab.yodaqa.analysis.FindReqParse;
-import cz.brmlab.yodaqa.analysis.tycor.LATByWordnet;
-import cz.brmlab.yodaqa.analysis.tycor.LATMatchTyCor;
-import cz.brmlab.yodaqa.analysis.tycor.LATNormalize;
-
+import cz.brmlab.yodaqa.analysis.*;
+import cz.brmlab.yodaqa.analysis.tycor.*;
 import de.tudarmstadt.ukp.dkpro.core.stanfordnlp.StanfordParser;
-
-import static org.apache.uima.fit.factory.AnalysisEngineFactory.createEngineDescription;
-import static org.apache.uima.fit.factory.AnalysisEngineFactory.createPrimitiveDescription;
+import de.tudarmstadt.ukp.dkpro.core.tokit.BreakIteratorSegmenter;
+import de.tudarmstadt.ukp.dkpro.core.treetagger.TreeTaggerPosTagger;
 
 /**
  * Annotate the CandidateAnswerCAS, eventually producing various features.
@@ -29,6 +25,27 @@ import static org.apache.uima.fit.factory.AnalysisEngineFactory.createPrimitiveD
 
 public class AnswerAnalysisAE /* XXX: extends AggregateBuilder ? */ {
 	final static Logger logger = LoggerFactory.getLogger(AnswerAnalysisAE.class);
+
+    public static class MultiLanguageParserExt extends MultiLanguageParser {
+        @Override
+        protected AnalysisEngineDescription createEngineDescription(String language) throws ResourceInitializationException {
+            AggregateBuilder builder = new AggregateBuilder();
+            if ("en".equals(language)) {
+                builder.add(createPrimitiveDescription(
+                        StanfordParser.class,
+                        StanfordParser.PARAM_MAX_TOKENS, 50, // more takes a lot of RAM and is sloow, StanfordParser is O(N^2)
+                        StanfordParser.PARAM_ANNOTATIONTYPE_TO_PARSE, "cz.brmlab.yodaqa.model.CandidateAnswer.PassageForParsing",
+                        StanfordParser.PARAM_WRITE_POS, true),
+                    CAS.NAME_DEFAULT_SOFA, "Answer");
+            } else {
+                builder.add(AnalysisEngineFactory.createEngineDescription(BreakIteratorSegmenter.class),
+                        CAS.NAME_DEFAULT_SOFA, "Answer");
+                builder.add(AnalysisEngineFactory.createEngineDescription(TreeTaggerPosTagger.class),
+                        CAS.NAME_DEFAULT_SOFA, "Answer");
+            }
+            return builder.createAggregateDescription();
+        }
+    }
 
 	public static AnalysisEngineDescription createEngineDescription() throws ResourceInitializationException {
 		AggregateBuilder builder = new AggregateBuilder();
@@ -52,11 +69,7 @@ public class AnswerAnalysisAE /* XXX: extends AggregateBuilder ? */ {
 		 * in that case, rerun StanfordParser just on the answer. */
 		builder.add(createPrimitiveDescription(FindReqParse.class),
 			CAS.NAME_DEFAULT_SOFA, "Answer");
-		builder.add(createPrimitiveDescription(
-				StanfordParser.class,
-				StanfordParser.PARAM_MAX_TOKENS, 50, // more takes a lot of RAM and is sloow, StanfordParser is O(N^2)
-				StanfordParser.PARAM_ANNOTATIONTYPE_TO_PARSE, "cz.brmlab.yodaqa.model.CandidateAnswer.PassageForParsing",
-				StanfordParser.PARAM_WRITE_POS, true),
+		builder.add(createPrimitiveDescription(MultiLanguageParserExt.class),
 			CAS.NAME_DEFAULT_SOFA, "Answer");
 
 		/* Generate and store on the side a "syntactically canonical

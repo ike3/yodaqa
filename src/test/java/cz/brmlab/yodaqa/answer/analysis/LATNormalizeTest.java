@@ -65,7 +65,6 @@ public class LATNormalizeTest {
     }
 
     @Test
-    @Ignore
     public void runRU() throws Exception {
         AggregateBuilder builder = new AggregateBuilder();
         builder.add(createPrimitiveDescription(LATNormalize.class));
@@ -76,7 +75,7 @@ public class LATNormalizeTest {
                 SimpleQuestion.PARAM_INPUT, "игнорируется");
 
         INPUT = "большие земли";
-        EXPECTED_OUTPUT = "several sun,sun";
+        EXPECTED_OUTPUT = "большие земля,земля";
         MultiCASPipeline.runPipeline(reader, builder.createAggregateDescription(), createEngineDescription(TestConsumer.class));
     }
 

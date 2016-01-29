@@ -1,40 +1,30 @@
 package cz.brmlab.yodaqa.analysis.tycor;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import net.sf.extjwnl.JWNLException;
-import net.sf.extjwnl.dictionary.Dictionary;
+import java.util.regex.*;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.uima.UimaContext;
-import org.apache.uima.analysis_engine.AnalysisEngine;
-import org.apache.uima.analysis_engine.AnalysisEngineDescription;
-import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
+import org.apache.uima.analysis_engine.*;
 import org.apache.uima.fit.component.JCasAnnotator_ImplBase;
-import org.apache.uima.fit.factory.AnalysisEngineFactory;
-import org.apache.uima.fit.factory.JCasFactory;
+import org.apache.uima.fit.factory.*;
 import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.impl.AnalysisEngineFactory_impl;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.slf4j.*;
 
+import cz.brmlab.yodaqa.analysis.MultiLanguageParser;
 import cz.brmlab.yodaqa.model.TyCor.LAT;
 import cz.brmlab.yodaqa.provider.Wordnet;
-
-import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Sentence;
-import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
+import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.*;
 import de.tudarmstadt.ukp.dkpro.core.languagetool.LanguageToolLemmatizer;
 import de.tudarmstadt.ukp.dkpro.core.stanfordnlp.StanfordPosTagger;
+import de.tudarmstadt.ukp.dkpro.core.tokit.BreakIteratorSegmenter;
+import de.tudarmstadt.ukp.dkpro.core.treetagger.TreeTaggerPosTagger;
+import net.sf.extjwnl.JWNLException;
+import net.sf.extjwnl.dictionary.Dictionary;
 
 /**
  * Normalize various low quality LAT forms.  This annotator goes through
@@ -77,6 +67,21 @@ public class LATNormalize extends JCasAnnotator_ImplBase {
 	 * spread all around this class. */
 	AnalysisEngine pipeline;
 
+	public static class MultiLanguageParserExt extends MultiLanguageParser {
+        @Override
+        protected AnalysisEngineDescription createEngineDescription(String language) throws ResourceInitializationException {
+            if ("en".equals(language)) {
+                return AnalysisEngineFactory.createEngineDescription(
+                        AnalysisEngineFactory.createEngineDescription(StanfordPosTagger.class),
+                        AnalysisEngineFactory.createEngineDescription(LanguageToolLemmatizer.class));
+            } else {
+                return AnalysisEngineFactory.createEngineDescription(
+                        AnalysisEngineFactory.createEngineDescription(BreakIteratorSegmenter.class),
+                        AnalysisEngineFactory.createEngineDescription(TreeTaggerPosTagger.class));
+            }
+        }
+	}
+
 	/* A global cache that stores the LAT transformations, as it
 	 * turns out that even lemmatization is quite slow. */
 	public class LATCacheEntry {
@@ -92,10 +97,6 @@ public class LATNormalize extends JCasAnnotator_ImplBase {
 
 		dictionary = Wordnet.getDictionary();
 
-		AnalysisEngineDescription pipelineDesc = AnalysisEngineFactory.createEngineDescription(
-				AnalysisEngineFactory.createEngineDescription(StanfordPosTagger.class),
-				AnalysisEngineFactory.createEngineDescription(LanguageToolLemmatizer.class)
-			);
 		/* XXX: We cannot create sub-pipelines using generic mechanisms
 		 * in the vein of
 		 * 	pipeline = AnalysisEngineFactory.createEngine(pipelineDesc);
@@ -111,8 +112,10 @@ public class LATNormalize extends JCasAnnotator_ImplBase {
 		 * UIMA factory that produces non-parallelized aggregates.
 		 * Note that we cannot build pipelines with nested aggregates
 		 * this way, though! */
-		AnalysisEngineFactory_impl aeFactory = new AnalysisEngineFactory_impl();
-		pipeline = (AnalysisEngine) aeFactory.produceResource(AnalysisEngine.class, pipelineDesc, null);
+        AnalysisEngineFactory_impl aeFactory = new AnalysisEngineFactory_impl();
+        AnalysisEngineDescription pipelineDesc = AnalysisEngineFactory.createEngineDescription(
+                    AnalysisEngineFactory.createEngineDescription(MultiLanguageParserExt.class));
+        pipeline = (AnalysisEngine) aeFactory.produceResource(AnalysisEngine.class, pipelineDesc, null);
 	}
 
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
@@ -262,7 +265,7 @@ public class LATNormalize extends JCasAnnotator_ImplBase {
 		try {
 			pipeline.collectionProcessComplete();
 		} catch (Exception e) {
-			e.printStackTrace();
+		    logger.error("Error while destroying pipeline", e);
 		}
 		pipeline.destroy();
 	}
