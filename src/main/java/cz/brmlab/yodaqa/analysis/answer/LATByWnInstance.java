@@ -17,6 +17,7 @@ import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
 import org.apache.uima.resource.ResourceInitializationException;
+import org.dbpedia.spotlight.uima.NamedEntityHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,7 +66,7 @@ public class LATByWnInstance extends JCasAnnotator_ImplBase {
 				/* ...however, prefer an overlapping named entity. */
 				boolean ne_found = false;
 				for (NamedEntity ne : JCasUtil.selectCovering(NamedEntity.class, focus)) {
-					if (processOne(jcas, focus, ne.getCoveredText()))
+					if (processOne(jcas, focus, NamedEntityHelper.getLabel(ne)))
 						ne_found = true;
 				}
 				if (!ne_found) {

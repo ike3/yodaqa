@@ -10,6 +10,7 @@ import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
 import org.apache.uima.resource.ResourceInitializationException;
+import org.dbpedia.spotlight.uima.NamedEntityHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -80,7 +81,7 @@ public class LATByDBpedia extends JCasAnnotator_ImplBase {
 			/* ...however, prefer an overlapping named entity. */
 			boolean ne_found = false;
 			for (NamedEntity ne : JCasUtil.selectCovering(NamedEntity.class, focus)) {
-				addLATByLabel(jcas, focus, ne.getCoveredText());
+				addLATByLabel(jcas, focus, NamedEntityHelper.getLabel(ne));
 				ne_found = true;
 			}
 

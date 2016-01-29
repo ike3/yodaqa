@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+  <typeSystemDescription xmlns="http://uima.apache.org/resourceSpecifier">
+    <name>Custom</name>
+    <description>Custom type system</description>
+    <vendor>yodaqa</vendor>
+    <version>1.0</version>
+    <imports>
+      <import name="desc.type.NamedEntity"/>
+    </imports>
+    <types>
+      <typeDescription>
+        <name>de.tudarmstadt.ukp.dkpro.core.api.ner.type.NamedEntityEx</name>
+        <description/>
+        <supertypeName>de.tudarmstadt.ukp.dkpro.core.api.ner.type.NamedEntity</supertypeName>
+        <features>
+          <featureDescription>
+            <name>canonText</name>
+            <description>Canonical Text</description>
+            <rangeTypeName>uima.cas.String</rangeTypeName>
+          </featureDescription>
+        </features>
+      </typeDescription>
+    </types>
+  </typeSystemDescription>

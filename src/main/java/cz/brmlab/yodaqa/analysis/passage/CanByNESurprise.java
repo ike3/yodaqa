@@ -7,6 +7,7 @@ import org.apache.uima.fit.descriptor.SofaCapability;
 import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
+import org.dbpedia.spotlight.uima.NamedEntityHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,7 +53,7 @@ public class CanByNESurprise extends CandidateGenerator {
 
 		for (Passage p: JCasUtil.select(passagesView, Passage.class)) {
 			for (NamedEntity ne : JCasUtil.selectCovered(NamedEntity.class, p)) {
-				String text = ne.getCoveredText();
+				String text = NamedEntityHelper.getLabel(ne);
 
 				/* TODO: This can be optimized a lot. */
 				boolean matches = false;

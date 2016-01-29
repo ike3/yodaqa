@@ -10,6 +10,7 @@ import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
 import org.apache.uima.resource.ResourceInitializationException;
+import org.dbpedia.spotlight.uima.NamedEntityHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,7 +68,7 @@ public class LATByNE extends JCasAnnotator_ImplBase {
 			}
 
 			addLAT(new NELAT(jcas), ne.getBegin(), ne.getEnd(), ne, ne.getValue(), pos, synset, 0.0, jcas.getDocumentLanguage());
-			logger.debug(".. LAT {}/{} by NE {}", ne.getValue(), synset, ne.getCoveredText());
+			logger.debug(".. LAT {}/{} by NE {}", ne.getValue(), synset, NamedEntityHelper.getLabel(ne));
 
 			addLATFeature(jcas, AF.LATNE);
 		}

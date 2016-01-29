@@ -1,5 +1,6 @@
-package cz.brmlab.yodaqa;
+package cz.brmlab.yodaqa.question.analysis;
 
+import cz.brmlab.yodaqa.*;
 import cz.brmlab.yodaqa.flow.MultiCASPipeline;
 import cz.brmlab.yodaqa.provider.SyncOpenNlpNameFinder;
 import de.tudarmstadt.ukp.dkpro.core.api.ner.type.NamedEntity;
@@ -26,7 +27,7 @@ import static org.apache.uima.fit.factory.AnalysisEngineFactory.createEngineDesc
 import static org.apache.uima.fit.factory.AnalysisEngineFactory.createPrimitiveDescription;
 import static org.apache.uima.fit.factory.CollectionReaderFactory.createReaderDescription;
 
-public class TokenizerLabTest {
+public class NamedEntityFinderTest {
     private static String EXPECTED_OUTPUT;
     private static Class<? extends Annotation> EXPECTED_CLASS;
 

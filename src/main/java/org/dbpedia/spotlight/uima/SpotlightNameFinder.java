@@ -16,7 +16,7 @@ import org.slf4j.*;
 import com.sun.jersey.api.client.*;
 
 import cz.brmlab.yodaqa.provider.rdf.*;
-import de.tudarmstadt.ukp.dkpro.core.api.ner.type.NamedEntity;
+import de.tudarmstadt.ukp.dkpro.core.api.ner.type.*;
 
 
 public class SpotlightNameFinder extends JCasAnnotator_ImplBase {
@@ -163,9 +163,10 @@ public class SpotlightNameFinder extends JCasAnnotator_ImplBase {
 
                         String variant = queryDbp(aJCas, label);
                         if (variant != null) {
-                            NamedEntity ne = new NamedEntity(aJCas, begin, end);
+                            NamedEntityEx ne = new NamedEntityEx(aJCas, begin, end);
                             ne.setValue(variant);
                             ne.addToIndexes(aJCas);
+                            ne.setCanonText(label);
                         }
 
 						/*JCasResource res = new JCasResource(aJCas);
