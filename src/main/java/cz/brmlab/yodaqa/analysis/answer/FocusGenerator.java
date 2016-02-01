@@ -108,9 +108,13 @@ public class FocusGenerator extends JCasAnnotator_ImplBase {
 		for (Token t : JCasUtil.select(jcas, Token.class))
 			tokens.add(t);
 
-        for (Dependency d : JCasUtil.select(jcas, Dependency.class)) {
-            logger.debug("Found dependency: [{}] {} -> {}", d.getDependencyType(), d.getGovernor().getCoveredText(), d.getDependent().getCoveredText());
-        }
+        /*for (Dependency d : JCasUtil.select(jcas, Dependency.class)) {
+            logger.debug("Found dependency: [{}] {}:{} -> {}:{}", d.getDependencyType(),
+                    d.getGovernor().getCoveredText(),
+                    d.getGovernor().getPos().getPosValue(),
+                    d.getDependent().getCoveredText(),
+                    d.getDependent().getPos().getPosValue());
+        }*/
 
 		SortedSet<Token> governors = new TreeSet<Token>(
 			new Comparator<Token>(){ @Override
