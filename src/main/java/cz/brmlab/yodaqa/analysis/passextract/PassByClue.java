@@ -1,21 +1,14 @@
 package cz.brmlab.yodaqa.analysis.passextract;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
-import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Sentence;
+import java.util.*;
 
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.CASException;
 import org.apache.uima.fit.component.JCasAnnotator_ImplBase;
 import org.apache.uima.fit.descriptor.SofaCapability;
-import org.apache.uima.fit.util.FSCollectionFactory;
-import org.apache.uima.fit.util.JCasUtil;
+import org.apache.uima.fit.util.*;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
 import org.apache.uima.resource.ResourceInitializationException;
@@ -24,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cz.brmlab.yodaqa.analysis.ansscore.AnswerFV;
+import cz.brmlab.yodaqa.analysis.passextract.PassByClue.CanonicSentenceList;
 import cz.brmlab.yodaqa.analysis.ansscore.AF;
 import cz.brmlab.yodaqa.model.Question.Clue;
 import cz.brmlab.yodaqa.model.SearchResult.PF_ClueMatch;
@@ -33,7 +27,7 @@ import cz.brmlab.yodaqa.model.SearchResult.PF_AboutClueWeight;
 import cz.brmlab.yodaqa.model.SearchResult.Passage;
 import cz.brmlab.yodaqa.model.SearchResult.PassageFeature;
 import cz.brmlab.yodaqa.model.SearchResult.ResultInfo;
-
+import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.*;
 /* XXX: The clue-specific features, ugh. */
 import cz.brmlab.yodaqa.model.Question.*;
 import cz.brmlab.yodaqa.model.CandidateAnswer.*;
@@ -52,7 +46,7 @@ import cz.brmlab.yodaqa.model.CandidateAnswer.*;
 
 
 public class PassByClue extends JCasAnnotator_ImplBase {
-	final Logger logger = LoggerFactory.getLogger(PassByClue.class);
+	static final Logger logger = LoggerFactory.getLogger(PassByClue.class);
 
 	public void initialize(UimaContext aContext) throws ResourceInitializationException {
 		super.initialize(aContext);
@@ -104,8 +98,10 @@ public class PassByClue extends JCasAnnotator_ImplBase {
 			 * try to match word clues of phrase clues we already
 			 * matched. */
 			for (Clue clue : JCasUtil.select(questionView, Clue.class)) {
-				if (!sentence.getCoveredText().matches(getClueRegex(clue)))
-					continue;
+			    String regex = getClueRegex(clue);
+                if (!sentence.getCoveredText().matches(regex) && !CanonicSentenceList.build(resultView, sentence).getText().matches(regex)) {
+                    continue;
+                }
 				/* Match! */
 
 				/* We will want to weight about-clues less than
@@ -220,5 +216,45 @@ public class PassByClue extends JCasAnnotator_ImplBase {
 			afv.setFeature(AF.PsgDist_ClueType + AF._clueType_ConceptLabelRR, bestLabelRr);
 			afv.setFeature(AF.OriginPsgBy_ClueType + AF._clueType_ConceptScore, bestScore);
 		}
+	}
+
+	public static class CanonicSentenceList {
+	    private static final Comparator<Token> LEMMA_COMPARATOR = new Comparator<Token>() {
+	        @Override
+	        public int compare(Token o1, Token o2) {
+	            return o1.getBegin() - o2.getBegin();
+	        }
+	    };
+
+	    private TreeSet<Token> tokens = new TreeSet<>(LEMMA_COMPARATOR);
+	    private String text = "";
+
+	    public static CanonicSentenceList build(JCas passagesView, Annotation overlap) {
+	        CanonicSentenceList result = new CanonicSentenceList();
+            StringBuilder sb = new StringBuilder();
+            Collection<Token> annotations = overlap != null ?
+                    JCasUtil.selectCovered(passagesView, Token.class, overlap) :
+                    JCasUtil.select(passagesView, Token.class);
+            for (Token token : annotations) {
+                if (token.getLemma() != null) {
+                    result.tokens.add(token);
+                    sb.append(token.getLemma().getValue()).append(" ");
+                } else {
+                    logger.warn("No lemma for " + token.getCoveredText());
+                }
+            }
+            if (sb.length() > 0) {
+                result.text = sb.substring(0, sb.length() - 1);
+            }
+            return result;
+	    }
+
+        public TreeSet<Token> getTokens() {
+            return tokens;
+        }
+
+        public String getText() {
+            return text;
+        }
 	}
 }

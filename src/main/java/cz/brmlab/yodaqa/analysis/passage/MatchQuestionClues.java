@@ -1,10 +1,8 @@
 package cz.brmlab.yodaqa.analysis.passage;
 
-import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.CASException;
@@ -17,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cz.brmlab.yodaqa.analysis.passextract.PassByClue;
+import cz.brmlab.yodaqa.analysis.passextract.PassByClue.CanonicSentenceList;
 import cz.brmlab.yodaqa.model.SearchResult.Passage;
 import cz.brmlab.yodaqa.model.SearchResult.QuestionClueMatch;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.*;
@@ -34,12 +33,6 @@ import cz.brmlab.yodaqa.model.Question.Clue;
 )
 
 public class MatchQuestionClues extends JCasAnnotator_ImplBase {
-	private static final Comparator<Token> LEMMA_COMPARATOR = new Comparator<Token>() {
-        @Override
-        public int compare(Token o1, Token o2) {
-            return o1.getBegin() - o2.getBegin();
-        }
-	};
 
     final Logger logger = LoggerFactory.getLogger(MatchQuestionClues.class);
 
@@ -71,28 +64,15 @@ public class MatchQuestionClues extends JCasAnnotator_ImplBase {
 					logger.debug("GEN {} / {}", qclue.getClass().getSimpleName(), qlc.getCoveredText());
 				}
 
-				TreeSet<Token> tokens = new TreeSet<>(LEMMA_COMPARATOR);
-				StringBuilder sb = new StringBuilder();
-				for (Token token : JCasUtil.select(passagesView, Token.class)) {
-                    if (token.getLemma() != null) {
-                        tokens.add(token);
-                        sb.append(token.getLemma().getValue()).append(" ");
-                    } else {
-                        logger.warn("No lemma for " + token.getCoveredText());
-                    }
-                }
-				if (sb.length() == 0) {
-				    continue;
-				}
-
-                m = Pattern.compile(PassByClue.getClueRegex(qclue, false)).matcher(sb.substring(0, sb.length() - 1));
+				CanonicSentenceList sentences = CanonicSentenceList.build(passagesView, null);
+                m = Pattern.compile(PassByClue.getClueRegex(qclue, false)).matcher(sentences.getText());
                 while (m.find()) {
                     /* We have a match! */
                     QuestionClueMatch qlc = new QuestionClueMatch(passagesView);
                     int pos = 0;
                     qlc.setBegin(-1);
                     qlc.setEnd(-1);
-                    for (Token token : tokens) {
+                    for (Token token : sentences.getTokens()) {
                         if (pos >= m.start() && qlc.getBegin() == -1) {
                             qlc.setBegin(token.getBegin());
                         }
