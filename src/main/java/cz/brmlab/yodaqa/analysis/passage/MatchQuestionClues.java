@@ -34,9 +34,9 @@ import cz.brmlab.yodaqa.model.Question.Clue;
 )
 
 public class MatchQuestionClues extends JCasAnnotator_ImplBase {
-	private static final Comparator<Lemma> LEMMA_COMPARATOR = new Comparator<Lemma>() {
+	private static final Comparator<Token> LEMMA_COMPARATOR = new Comparator<Token>() {
         @Override
-        public int compare(Lemma o1, Lemma o2) {
+        public int compare(Token o1, Token o2) {
             return o1.getBegin() - o2.getBegin();
         }
 	};
@@ -71,13 +71,14 @@ public class MatchQuestionClues extends JCasAnnotator_ImplBase {
 					logger.debug("GEN {} / {}", qclue.getClass().getSimpleName(), qlc.getCoveredText());
 				}
 
-				TreeSet<Lemma> lemmas = new TreeSet<>(LEMMA_COMPARATOR);
-				Collection<Token> tokens = JCasUtil.select(passagesView, Token.class);
+				TreeSet<Token> tokens = new TreeSet<>(LEMMA_COMPARATOR);
 				StringBuilder sb = new StringBuilder();
-				for (Token token : tokens) {
+				for (Token token : JCasUtil.select(passagesView, Token.class)) {
                     if (token.getLemma() != null) {
-                        lemmas.add(token.getLemma());
+                        tokens.add(token);
                         sb.append(token.getLemma().getValue()).append(" ");
+                    } else {
+                        logger.warn("No lemma for " + token.getCoveredText());
                     }
                 }
 				if (sb.length() == 0) {
@@ -91,14 +92,14 @@ public class MatchQuestionClues extends JCasAnnotator_ImplBase {
                     int pos = 0;
                     qlc.setBegin(-1);
                     qlc.setEnd(-1);
-                    for (Lemma lemma : lemmas) {
+                    for (Token token : tokens) {
                         if (pos >= m.start() && qlc.getBegin() == -1) {
-                            qlc.setBegin(pos);
+                            qlc.setBegin(token.getBegin());
                         }
                         if (pos >= m.end() && qlc.getEnd() == -1) {
-                            qlc.setEnd(pos - 1);
+                            qlc.setEnd(token.getEnd());
                         }
-                        pos += lemma.getValue().length() + 1;
+                        pos += token.getLemma().getValue().length() + 1;
                     }
                     if (qlc.getEnd() == -1) {
                         qlc.setEnd(p.getEnd());
