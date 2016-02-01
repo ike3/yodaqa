@@ -70,6 +70,11 @@ public class CanByLATSubject extends CandidateGenerator {
 			processSubject(questionView, passagesView, ri, nsubj);
 		for (NSUBJPASS nsubj : JCasUtil.select(passagesView, NSUBJPASS.class))
 			processSubject(questionView, passagesView, ri, nsubj);
+		for (Dependency dep : JCasUtil.select(passagesView, Dependency.class)) {
+		    if ("огранич".equals(dep.getDependencyType())) {
+		        processSubject(questionView, passagesView, ri, dep);
+		    }
+		}
 	}
 
 	protected void processSubject(JCas questionView, JCas passagesView, ResultInfo ri, Dependency nsubj)

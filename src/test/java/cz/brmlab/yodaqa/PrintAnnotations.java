@@ -19,19 +19,20 @@
 
 package cz.brmlab.yodaqa;
 
-import java.io.File;
-import java.io.PrintStream;
-import java.util.Iterator;
-import java.util.List;
+import java.io.*;
+import java.text.MessageFormat;
+import java.util.*;
 
 import org.apache.uima.UIMAFramework;
-import org.apache.uima.analysis_engine.AnalysisEngine;
-import org.apache.uima.analysis_engine.ResultSpecification;
+import org.apache.uima.analysis_engine.*;
 import org.apache.uima.cas.*;
 import org.apache.uima.cas.text.AnnotationFS;
+import org.apache.uima.fit.util.JCasUtil;
+import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceSpecifier;
-import org.apache.uima.util.FileUtils;
-import org.apache.uima.util.XMLInputSource;
+import org.apache.uima.util.*;
+
+import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.dependency.Dependency;
 
 /**
  * A simple example of how to extract information from the CAS. This example retrieves all
@@ -274,4 +275,14 @@ public class PrintAnnotations {
     }
   }
 
+  public static void printDependecies(JCas jcas, PrintStream aOut) {
+      for (Dependency d : JCasUtil.select(jcas, Dependency.class)) {
+          aOut.println(String.format("Found dependency: [%s] %s:%s -> %s:%s", d.getDependencyType(),
+              d.getGovernor().getCoveredText(),
+              d.getGovernor().getPos().getPosValue(),
+              d.getDependent().getCoveredText(),
+              d.getDependent().getPos().getPosValue()));
+      }
+
+  }
 }
