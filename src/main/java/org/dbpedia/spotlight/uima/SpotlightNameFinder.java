@@ -24,7 +24,7 @@ public class SpotlightNameFinder extends JCasAnnotator_ImplBase {
     final Logger LOG = LoggerFactory.getLogger(SpotlightNameFinder.class);
 
 	public static final String PARAM_ENDPOINT = "endPoint";
-	@ConfigurationParameter(name=PARAM_ENDPOINT)
+	@ConfigurationParameter(name=PARAM_ENDPOINT, defaultValue = "http://spotlight.sztaki.hu:2227/rest/annotate")
 	private String SPOTLIGHT_ENDPOINT;
 
 	// Default values for the web service parameters for the spotlight endpoint
@@ -161,6 +161,7 @@ public class SpotlightNameFinder extends JCasAnnotator_ImplBase {
                             label = aJCas.getDocumentText().substring(begin, end);
                         }
 
+                        LOG.info("Querying DpPedia for {}", label);
                         String variant = queryDbp(aJCas, label);
                         if (variant != null) {
                             NamedEntityEx ne = new NamedEntityEx(aJCas, begin, end);

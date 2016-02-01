@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -27,14 +27,7 @@ import java.util.List;
 import org.apache.uima.UIMAFramework;
 import org.apache.uima.analysis_engine.AnalysisEngine;
 import org.apache.uima.analysis_engine.ResultSpecification;
-import org.apache.uima.cas.CAS;
-import org.apache.uima.cas.FSIterator;
-import org.apache.uima.cas.Feature;
-import org.apache.uima.cas.FeatureStructure;
-import org.apache.uima.cas.FloatArrayFS;
-import org.apache.uima.cas.IntArrayFS;
-import org.apache.uima.cas.StringArrayFS;
-import org.apache.uima.cas.Type;
+import org.apache.uima.cas.*;
 import org.apache.uima.cas.text.AnnotationFS;
 import org.apache.uima.resource.ResourceSpecifier;
 import org.apache.uima.util.FileUtils;
@@ -44,14 +37,14 @@ import org.apache.uima.util.XMLInputSource;
  * A simple example of how to extract information from the CAS. This example retrieves all
  * annotations of a specified type from a CAS and prints them (along with all of their features) to
  * a PrintStream.
- * 
- * 
+ *
+ *
  */
 public class PrintAnnotations {
 
   /**
    * Prints all Annotations to a PrintStream.
-   * 
+   *
    * @param aCAS
    *          the CAS containing the FeatureStructures to print
    * @param aOut
@@ -71,7 +64,7 @@ public class PrintAnnotations {
 
   /**
    * Prints all Annotations of a specified Type to a PrintStream.
-   * 
+   *
    * @param aCAS
    *          the CAS containing the FeatureStructures to print
    * @param aAnnotType
@@ -93,7 +86,7 @@ public class PrintAnnotations {
 
   /**
    * Prints a FeatureStructure to a PrintStream.
-   * 
+   *
    * @param aFS
    *          the FeatureStructure to print
    * @param aCAS
@@ -202,11 +195,15 @@ public class PrintAnnotations {
         }
       } else // non-primitive type
       {
-        FeatureStructure val = aFS.getFeatureValue(feat);
-        if (val == null) {
-          aOut.println("null");
-        } else {
-          printFS(val, aCAS, aNestingLevel + 1, aOut);
+        try {
+            FeatureStructure val = aFS.getFeatureValue(feat);
+            if (val == null) {
+                aOut.println("null");
+            } else {
+                printFS(val, aCAS, aNestingLevel + 1, aOut);
+            }
+        } catch (CASRuntimeException e) {
+            aOut.println("<unknown primitive>");
         }
       }
     }
@@ -214,7 +211,7 @@ public class PrintAnnotations {
 
   /**
    * Prints tabs to a PrintStream.
-   * 
+   *
    * @param aNumTabs
    *          number of tabs to print
    * @param aOut

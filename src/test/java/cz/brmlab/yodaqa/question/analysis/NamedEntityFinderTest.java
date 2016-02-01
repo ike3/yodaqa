@@ -95,9 +95,7 @@ public class NamedEntityFinderTest {
     @Test
     public void openNlpNameFinderRu() throws Exception {
         AggregateBuilder builder = new AggregateBuilder();
-        builder.add(createPrimitiveDescription(
-                SpotlightNameFinder.class,
-                SpotlightNameFinder.PARAM_ENDPOINT, "http://spotlight.sztaki.hu:2227/rest/annotate"));
+        builder.add(createPrimitiveDescription(SpotlightNameFinder.class));
 
         CollectionReaderDescription reader = createReaderDescription(
                 Tested.class,
