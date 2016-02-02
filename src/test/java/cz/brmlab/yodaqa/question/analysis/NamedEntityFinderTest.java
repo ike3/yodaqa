@@ -27,7 +27,7 @@ import static org.apache.uima.fit.factory.AnalysisEngineFactory.createEngineDesc
 import static org.apache.uima.fit.factory.AnalysisEngineFactory.createPrimitiveDescription;
 import static org.apache.uima.fit.factory.CollectionReaderFactory.createReaderDescription;
 
-public class NamedEntityFinderTest {
+public class NamedEntityFinderTest extends MultiCASPipelineTest {
     private static String EXPECTED_OUTPUT;
     private static Class<? extends Annotation> EXPECTED_CLASS;
 
@@ -82,14 +82,9 @@ public class NamedEntityFinderTest {
         builder.add(createPrimitiveDescription(BreakIteratorSegmenter.class));
         builder.add(createPrimitiveDescription(SyncOpenNlpNameFinder.class));
 
-        CollectionReaderDescription reader = createReaderDescription(
-                Tested.class,
-                SimpleQuestion.PARAM_LANGUAGE, "en",
-                SimpleQuestion.PARAM_INPUT, "Harry Potter");
-
         EXPECTED_CLASS = NamedEntity.class;
         EXPECTED_OUTPUT = "Harry Potter";
-        MultiCASPipeline.runPipeline(reader, builder.createAggregateDescription(), createEngineDescription(TestConsumer.class));
+        runPipeline(Tested.class, "Harry Potter", builder, TestConsumer.class);
     }
 
     @Test
@@ -97,13 +92,8 @@ public class NamedEntityFinderTest {
         AggregateBuilder builder = new AggregateBuilder();
         builder.add(createPrimitiveDescription(SpotlightNameFinder.class));
 
-        CollectionReaderDescription reader = createReaderDescription(
-                Tested.class,
-                SimpleQuestion.PARAM_LANGUAGE, "ru",
-                SimpleQuestion.PARAM_INPUT, "Гарри Поттера");
-
         EXPECTED_CLASS = NamedEntity.class;
         EXPECTED_OUTPUT = "Гарри Поттера";
-        MultiCASPipeline.runPipeline(reader, builder.createAggregateDescription(), createEngineDescription(TestConsumer.class));
+        runPipeline(Tested.class, "Гарри Поттера", builder, TestConsumer.class);
     }
 }

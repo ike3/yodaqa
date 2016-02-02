@@ -1,6 +1,6 @@
 package cz.brmlab.yodaqa.answer.analysis;
 
-import static org.apache.uima.fit.factory.AnalysisEngineFactory.*;
+import static org.apache.uima.fit.factory.AnalysisEngineFactory.createPrimitiveDescription;
 import static org.apache.uima.fit.factory.CollectionReaderFactory.createReaderDescription;
 
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
@@ -11,12 +11,11 @@ import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
 import org.junit.*;
 
-import cz.brmlab.yodaqa.SimpleQuestion;
+import cz.brmlab.yodaqa.*;
 import cz.brmlab.yodaqa.analysis.ansscore.AnswerFV;
-import cz.brmlab.yodaqa.analysis.answer.*;
-import cz.brmlab.yodaqa.flow.MultiCASPipeline;
+import cz.brmlab.yodaqa.analysis.answer.LATByDBpedia;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerInfo;
-import cz.brmlab.yodaqa.model.TyCor.*;
+import cz.brmlab.yodaqa.model.TyCor.DBpLAT;
 
 /*
 PREFIX owl: <http://www.w3.org/2002/07/owl#>
@@ -44,7 +43,7 @@ FILTER ( regex(str(?res), '^http://dbpedia.org/resource/', 'i') )
 FILTER ( !regex(str(?res), '^http://dbpedia.org/resource/[^_]*:', 'i') )
 }
  */
-public class LATByDBpediaTest {
+public class LATByDBpediaTest extends MultiCASPipelineTest {
     private static String EXPECTED_OUTPUT;
 
     public static class Tested extends SimpleQuestion {
@@ -91,7 +90,7 @@ public class LATByDBpediaTest {
                 SimpleQuestion.PARAM_INPUT, "sun");
 
         EXPECTED_OUTPUT = "star";
-        MultiCASPipeline.runPipeline(reader, builder.createAggregateDescription(), createEngineDescription(TestConsumer.class));
+        runPipeline(Tested.class, "sun", builder, TestConsumer.class);
     }
 
     @Test
@@ -105,6 +104,6 @@ public class LATByDBpediaTest {
                 SimpleQuestion.PARAM_INPUT, "солнце");
 
         EXPECTED_OUTPUT = "star";
-        MultiCASPipeline.runPipeline(reader, builder.createAggregateDescription(), createEngineDescription(TestConsumer.class));
+        runPipeline(Tested.class, "солнце", builder, TestConsumer.class);
     }
 }

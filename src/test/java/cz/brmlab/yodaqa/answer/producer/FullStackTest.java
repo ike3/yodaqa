@@ -1,11 +1,7 @@
 package cz.brmlab.yodaqa.answer.producer;
 
-import static org.apache.uima.fit.factory.AnalysisEngineFactory.createEngineDescription;
-import static org.apache.uima.fit.factory.CollectionReaderFactory.createReaderDescription;
-
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.FSIterator;
-import org.apache.uima.collection.CollectionReaderDescription;
 import org.apache.uima.fit.component.JCasConsumer_ImplBase;
 import org.apache.uima.fit.factory.*;
 import org.apache.uima.jcas.JCas;
@@ -15,7 +11,6 @@ import org.junit.*;
 import cz.brmlab.yodaqa.*;
 import cz.brmlab.yodaqa.analysis.passage.PassageAnalysisAE;
 import cz.brmlab.yodaqa.analysis.passextract.PassageExtractorAE;
-import cz.brmlab.yodaqa.flow.MultiCASPipeline;
 import cz.brmlab.yodaqa.flow.dashboard.*;
 import cz.brmlab.yodaqa.model.Question.*;
 import cz.brmlab.yodaqa.model.SearchResult.*;
@@ -23,8 +18,8 @@ import cz.brmlab.yodaqa.pipeline.*;
 
 /*
  */
-public class FullStackTest {
-    String dir = "C:\\Users\\skuzmin\\Projects\\BigData\\yodaqa\\dump\\";
+public class FullStackTest extends MultiCASPipelineTest {
+    private static final String dir = System.getProperty("java.io.tmpdir");
 
     private static String QUESTION;
     private static String RESULT;
@@ -106,16 +101,11 @@ public class FullStackTest {
                 DumpCAS2File.PARAM_SAVE_DIR, dir,
                 DumpCAS2File.PARAM_SUFFIX, "FullStack"));
 
-        CollectionReaderDescription reader = createReaderDescription(
-                Tested.class,
-                SimpleQuestion.PARAM_LANGUAGE, "en",
-                SimpleQuestion.PARAM_INPUT, "ignored");
-
         RESULT = "J. K. Rowling, a known writer of the book 'Harry Potter'";
         QUESTION = "Who wrote Harry Potter?";
         CLUE_NE = "Harry Potter";
         CLUE_LAT = "wrote";
-        MultiCASPipeline.runPipeline(reader, builder.createAggregateDescription(), createEngineDescription(TestConsumer.class));
+        runPipeline(Tested.class, "ignore", builder, TestConsumer.class);
     }
 
     @Test
@@ -130,15 +120,10 @@ public class FullStackTest {
                 DumpCAS2File.PARAM_SAVE_DIR, dir,
                 DumpCAS2File.PARAM_SUFFIX, "FullStack"));
 
-        CollectionReaderDescription reader = createReaderDescription(
-                Tested.class,
-                SimpleQuestion.PARAM_LANGUAGE, "ru",
-                SimpleQuestion.PARAM_INPUT, "ignored");
-
         RESULT = "В сочельник вилку следует держать правой рукой. Это улучшает восприятие праздника.";
         QUESTION = "игнор";
         CLUE_NE = "сочельник";
         CLUE_LAT = "рука";
-        MultiCASPipeline.runPipeline(reader, builder.createAggregateDescription(), createEngineDescription(TestConsumer.class));
+        runPipeline(Tested.class, "это игнорируется", builder, TestConsumer.class);
     }
 }

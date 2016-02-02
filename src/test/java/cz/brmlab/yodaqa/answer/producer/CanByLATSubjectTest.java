@@ -1,6 +1,6 @@
 package cz.brmlab.yodaqa.answer.producer;
 
-import static org.apache.uima.fit.factory.AnalysisEngineFactory.*;
+import static org.apache.uima.fit.factory.AnalysisEngineFactory.createPrimitiveDescription;
 import static org.apache.uima.fit.factory.CollectionReaderFactory.createReaderDescription;
 
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
@@ -10,32 +10,22 @@ import org.apache.uima.fit.component.JCasConsumer_ImplBase;
 import org.apache.uima.fit.factory.*;
 import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
-import org.dbpedia.spotlight.uima.SpotlightNameFinder;
 import org.junit.*;
 
 import cz.brmlab.yodaqa.*;
-import cz.brmlab.yodaqa.analysis.ansscore.*;
-import cz.brmlab.yodaqa.analysis.answer.*;
-import cz.brmlab.yodaqa.analysis.passage.*;
-import cz.brmlab.yodaqa.analysis.tycor.*;
-import cz.brmlab.yodaqa.flow.MultiCASPipeline;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerInfo;
-import cz.brmlab.yodaqa.model.Question.*;
+import cz.brmlab.yodaqa.analysis.passage.CanByLATSubject;
+import cz.brmlab.yodaqa.model.Question.QuestionInfo;
 import cz.brmlab.yodaqa.model.SearchResult.*;
-import cz.brmlab.yodaqa.model.TyCor.*;
-import cz.brmlab.yodaqa.provider.SyncOpenNlpNameFinder;
-import de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.POS;
-import de.tudarmstadt.ukp.dkpro.core.api.ner.type.NamedEntity;
+import cz.brmlab.yodaqa.model.TyCor.LAT;
 import de.tudarmstadt.ukp.dkpro.core.languagetool.LanguageToolLemmatizer;
 import de.tudarmstadt.ukp.dkpro.core.maltparser.MaltParser;
-import de.tudarmstadt.ukp.dkpro.core.opennlp.OpenNlpNameFinder;
 import de.tudarmstadt.ukp.dkpro.core.stanfordnlp.StanfordParser;
 import de.tudarmstadt.ukp.dkpro.core.tokit.BreakIteratorSegmenter;
 import de.tudarmstadt.ukp.dkpro.core.treetagger.TreeTaggerPosTagger;
 
 /*
  */
-public class CanByLATSubjectTest {
+public class CanByLATSubjectTest extends MultiCASPipelineTest {
 
     private static String LAT_TEXT;
     private static String INPUT;
@@ -106,15 +96,10 @@ public class CanByLATSubjectTest {
 
         builder.add(createPrimitiveDescription(CanByLATSubject.class));
 
-        CollectionReaderDescription reader = createReaderDescription(
-                Tested.class,
-                SimpleQuestion.PARAM_LANGUAGE, "en",
-                SimpleQuestion.PARAM_INPUT, "игнор");
-
         LAT_TEXT = "book";
         INPUT = "The Harry Potter's book is black";
         EXPECTED_TEXT = "black";
-        MultiCASPipeline.runPipeline(reader, builder.createAggregateDescription(), createEngineDescription(TestConsumer.class));
+        runPipeline(Tested.class, "ignore", builder, TestConsumer.class);
     }
 
     @Test
@@ -137,7 +122,6 @@ public class CanByLATSubjectTest {
         LAT_TEXT = "книга";
         INPUT = "книга о Гарри Поттере имеет черную обложку";
         EXPECTED_TEXT = "черную";
-        MultiCASPipeline.runPipeline(reader, builder.createAggregateDescription(), createEngineDescription(TestConsumer.class));
+        runPipeline(Tested.class, "игнор", builder, TestConsumer.class);
     }
-
 }

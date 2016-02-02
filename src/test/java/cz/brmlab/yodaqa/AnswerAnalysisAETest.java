@@ -17,7 +17,7 @@ import cz.brmlab.yodaqa.pipeline.*;
 
 
 public class AnswerAnalysisAETest {
-    String dir = "C:\\Users\\skuzmin\\Projects\\BigData\\yodaqa\\dump\\";
+    private static final String dir = System.getProperty("java.io.tmpdir");
 
     @Test
     @Ignore // требует наличия файлов в спец каталоге, игнор

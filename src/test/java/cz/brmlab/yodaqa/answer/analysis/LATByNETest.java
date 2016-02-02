@@ -1,27 +1,24 @@
 package cz.brmlab.yodaqa.answer.analysis;
 
-import static org.apache.uima.fit.factory.AnalysisEngineFactory.*;
-import static org.apache.uima.fit.factory.CollectionReaderFactory.createReaderDescription;
+import static org.apache.uima.fit.factory.AnalysisEngineFactory.createPrimitiveDescription;
 
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
-import org.apache.uima.collection.CollectionReaderDescription;
 import org.apache.uima.fit.component.JCasConsumer_ImplBase;
 import org.apache.uima.fit.factory.AggregateBuilder;
 import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
 import org.junit.*;
 
-import cz.brmlab.yodaqa.SimpleQuestion;
+import cz.brmlab.yodaqa.*;
 import cz.brmlab.yodaqa.analysis.ansscore.AnswerFV;
-import cz.brmlab.yodaqa.analysis.answer.*;
-import cz.brmlab.yodaqa.flow.MultiCASPipeline;
+import cz.brmlab.yodaqa.analysis.answer.LATByNE;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerInfo;
-import cz.brmlab.yodaqa.model.TyCor.*;
+import cz.brmlab.yodaqa.model.TyCor.NELAT;
 import de.tudarmstadt.ukp.dkpro.core.api.ner.type.NamedEntity;
 
 /*
  */
-public class LATByNETest {
+public class LATByNETest extends MultiCASPipelineTest {
     private static String EXPECTED_OUTPUT;
     private static String INPUT;
 
@@ -68,14 +65,9 @@ public class LATByNETest {
         AggregateBuilder builder = new AggregateBuilder();
         builder.add(createPrimitiveDescription(LATByNE.class));
 
-        CollectionReaderDescription reader = createReaderDescription(
-                Tested.class,
-                SimpleQuestion.PARAM_LANGUAGE, "en",
-                SimpleQuestion.PARAM_INPUT, "игнор");
-
         INPUT = "Россия";
         EXPECTED_OUTPUT = "Россия";
-        MultiCASPipeline.runPipeline(reader, builder.createAggregateDescription(), createEngineDescription(TestConsumer.class));
+        runPipeline(Tested.class, "это игнорируется", builder, TestConsumer.class);
     }
 
 }

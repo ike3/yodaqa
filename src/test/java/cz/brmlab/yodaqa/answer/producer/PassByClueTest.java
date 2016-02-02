@@ -1,20 +1,17 @@
 package cz.brmlab.yodaqa.answer.producer;
 
-import static org.apache.uima.fit.factory.AnalysisEngineFactory.*;
-import static org.apache.uima.fit.factory.CollectionReaderFactory.createReaderDescription;
+import static org.apache.uima.fit.factory.AnalysisEngineFactory.createPrimitiveDescription;
 
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.CAS;
-import org.apache.uima.collection.CollectionReaderDescription;
 import org.apache.uima.fit.component.JCasConsumer_ImplBase;
 import org.apache.uima.fit.factory.AggregateBuilder;
 import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
 import org.junit.*;
 
-import cz.brmlab.yodaqa.SimpleQuestion;
+import cz.brmlab.yodaqa.*;
 import cz.brmlab.yodaqa.analysis.passextract.*;
-import cz.brmlab.yodaqa.flow.MultiCASPipeline;
 import cz.brmlab.yodaqa.model.Question.*;
 import cz.brmlab.yodaqa.model.SearchResult.*;
 import de.tudarmstadt.ukp.dkpro.core.stanfordnlp.StanfordSegmenter;
@@ -23,7 +20,7 @@ import de.tudarmstadt.ukp.dkpro.core.treetagger.TreeTaggerPosTagger;
 
 /*
  */
-public class PassByClueTest {
+public class PassByClueTest extends MultiCASPipelineTest {
 
     private static ClueNE clue;
     private static String INPUT;
@@ -82,15 +79,10 @@ public class PassByClueTest {
         builder.add(createPrimitiveDescription(PassSetup.class));
         builder.add(createPrimitiveDescription(PassByClue.class));
 
-        CollectionReaderDescription reader = createReaderDescription(
-                Tested.class,
-                SimpleQuestion.PARAM_LANGUAGE, "en",
-                SimpleQuestion.PARAM_INPUT, "игнор");
-
         INPUT = "The Harry Potter's book. The philosoper's stone is a great thing. The writer is happy.";
         CLUE_LABEL = "Harry Potter";
         EXPECTED_TEXT = "The Harry Potter's book.";
-        MultiCASPipeline.runPipeline(reader, builder.createAggregateDescription(), createEngineDescription(TestConsumer.class));
+        runPipeline(Tested.class, "ignore", builder, TestConsumer.class);
     }
 
     @Test
@@ -101,14 +93,9 @@ public class PassByClueTest {
         builder.add(createPrimitiveDescription(PassSetup.class));
         builder.add(createPrimitiveDescription(PassByClue.class));
 
-        CollectionReaderDescription reader = createReaderDescription(
-                Tested.class,
-                SimpleQuestion.PARAM_LANGUAGE, "ru",
-                SimpleQuestion.PARAM_INPUT, "игнор");
-
         INPUT = "Книга о желтом слоне. Слоны бывают разные. Самый лучший слон в Африке.";
         CLUE_LABEL = "желтый слон";
         EXPECTED_TEXT = "Книга о желтом слоне.";
-        MultiCASPipeline.runPipeline(reader, builder.createAggregateDescription(), createEngineDescription(TestConsumer.class));
+        runPipeline(Tested.class, "это игнорируется", builder, TestConsumer.class);
     }
 }

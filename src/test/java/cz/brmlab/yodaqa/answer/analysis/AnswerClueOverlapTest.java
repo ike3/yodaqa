@@ -1,20 +1,17 @@
 package cz.brmlab.yodaqa.answer.analysis;
 
-import static org.apache.uima.fit.factory.AnalysisEngineFactory.*;
-import static org.apache.uima.fit.factory.CollectionReaderFactory.createReaderDescription;
+import static org.apache.uima.fit.factory.AnalysisEngineFactory.createPrimitiveDescription;
 
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
-import org.apache.uima.collection.CollectionReaderDescription;
 import org.apache.uima.fit.component.JCasConsumer_ImplBase;
 import org.apache.uima.fit.factory.AggregateBuilder;
 import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
 import org.junit.*;
 
-import cz.brmlab.yodaqa.SimpleQuestion;
+import cz.brmlab.yodaqa.*;
 import cz.brmlab.yodaqa.analysis.ansscore.*;
 import cz.brmlab.yodaqa.analysis.answer.AnswerClueOverlap;
-import cz.brmlab.yodaqa.flow.MultiCASPipeline;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerInfo;
 import cz.brmlab.yodaqa.model.Question.*;
 
@@ -27,7 +24,7 @@ import cz.brmlab.yodaqa.model.Question.*;
  *
  * Это генерит MetaMatch
  */
-public class AnswerClueOverlapTest {
+public class AnswerClueOverlapTest extends MultiCASPipelineTest {
 
     public static class Tested extends SimpleQuestion {
         public void initCas(JCas jcas) {
@@ -78,11 +75,6 @@ public class AnswerClueOverlapTest {
         AggregateBuilder builder = new AggregateBuilder();
         builder.add(createPrimitiveDescription(AnswerClueOverlap.class));
 
-        CollectionReaderDescription reader = createReaderDescription(
-                Tested.class,
-                SimpleQuestion.PARAM_LANGUAGE, "ru",
-                SimpleQuestion.PARAM_INPUT, "это игнорируется, см ai.setCanonText");
-
-        MultiCASPipeline.runPipeline(reader, builder.createAggregateDescription(), createEngineDescription(TestConsumer.class));
+        runPipeline(Tested.class, "это игнорируется, см ai.setCanonText", builder, TestConsumer.class);
     }
 }

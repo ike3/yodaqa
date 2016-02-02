@@ -1,38 +1,35 @@
 package cz.brmlab.yodaqa.answer.analysis;
 
-import static org.apache.uima.fit.factory.AnalysisEngineFactory.*;
-import static org.apache.uima.fit.factory.CollectionReaderFactory.createReaderDescription;
+import static org.apache.uima.fit.factory.AnalysisEngineFactory.createPrimitiveDescription;
 
 import java.util.*;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.*;
-import org.apache.uima.collection.CollectionReaderDescription;
 import org.apache.uima.fit.component.JCasConsumer_ImplBase;
 import org.apache.uima.fit.factory.*;
 import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
-import org.dbpedia.spotlight.uima.SpotlightNameFinder;
-import org.junit.*;
+import org.junit.Test;
 
-import cz.brmlab.yodaqa.SimpleQuestion;
+import cz.brmlab.yodaqa.*;
 import cz.brmlab.yodaqa.analysis.ansscore.AnswerFV;
 import cz.brmlab.yodaqa.analysis.answer.AnswerAnalysisAE;
-import cz.brmlab.yodaqa.flow.MultiCASPipeline;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerInfo;
 import cz.brmlab.yodaqa.model.Question.*;
 import cz.brmlab.yodaqa.model.TyCor.LAT;
 import cz.brmlab.yodaqa.pipeline.*;
 import cz.brmlab.yodaqa.provider.OpenNlpNamedEntities;
 import de.tudarmstadt.ukp.dkpro.core.languagetool.LanguageToolLemmatizer;
+import de.tudarmstadt.ukp.dkpro.core.maltparser.MaltParser;
 import de.tudarmstadt.ukp.dkpro.core.tokit.BreakIteratorSegmenter;
 import de.tudarmstadt.ukp.dkpro.core.treetagger.TreeTaggerPosTagger;
 
 /*
  */
-public class FullStackTest {
-    String dir = "C:\\Users\\skuzmin\\Projects\\BigData\\yodaqa\\dump\\";
+public class FullStackTest extends MultiCASPipelineTest {
+    private static final String dir = System.getProperty("java.io.tmpdir");
     private static String QUESTION;
     private static String ANSWER;
 
@@ -78,6 +75,7 @@ public class FullStackTest {
         public void process(JCas jcas) throws AnalysisEngineProcessException {
             try {
                 AnswerInfo ai = JCasUtil.selectSingle(jcas.getView("Answer"), AnswerInfo.class);
+                //PrintAnnotations.printAnnotations(jcas.getView("Answer").getCas(), System.out);
 
                 // SyntaxCanonization
                 //Assert.assertEquals("j. k. rowling", ai.getCanonText());
@@ -131,14 +129,9 @@ public class FullStackTest {
                 DumpCAS2File.PARAM_SAVE_DIR, dir,
                 DumpCAS2File.PARAM_SUFFIX, "FullStack"));
 
-        CollectionReaderDescription reader = createReaderDescription(
-                Tested.class,
-                SimpleQuestion.PARAM_LANGUAGE, "en",
-                SimpleQuestion.PARAM_INPUT, "ignored");
-
         QUESTION = "ignored";
         ANSWER = "White House at the Spring lake";
-        MultiCASPipeline.runPipeline(reader, builder.createAggregateDescription(), createEngineDescription(TestConsumer.class));
+        runPipeline(Tested.class, "ignored", builder, TestConsumer.class);
     }
 
     @Test
@@ -149,9 +142,11 @@ public class FullStackTest {
                 CAS.NAME_DEFAULT_SOFA, "Answer");
         builder.add(createPrimitiveDescription(TreeTaggerPosTagger.class),
                 CAS.NAME_DEFAULT_SOFA, "Answer");
-        builder.add(createPrimitiveDescription(SpotlightNameFinder.class,
-                SpotlightNameFinder.PARAM_ENDPOINT, "http://spotlight.sztaki.hu:2227/rest/annotate"),
+        builder.add(AnalysisEngineFactory.createEngineDescription(MaltParser.class),
                 CAS.NAME_DEFAULT_SOFA, "Answer");
+        /*builder.add(createPrimitiveDescription(SpotlightNameFinder.class,
+                SpotlightNameFinder.PARAM_ENDPOINT, "http://spotlight.sztaki.hu:2227/rest/annotate"),
+                CAS.NAME_DEFAULT_SOFA, "Answer");*/
 
         builder.add(AnswerAnalysisAE.createEngineDescription());
         builder.add(AnalysisEngineFactory.createEngineDescription(
@@ -159,13 +154,8 @@ public class FullStackTest {
                 DumpCAS2File.PARAM_SAVE_DIR, dir,
                 DumpCAS2File.PARAM_SUFFIX, "FullStack"));
 
-        CollectionReaderDescription reader = createReaderDescription(
-                Tested.class,
-                SimpleQuestion.PARAM_LANGUAGE, "ru",
-                SimpleQuestion.PARAM_INPUT, "ignored");
-
         QUESTION = "не имеет значения";
-        ANSWER = "Берлин не около озера Байкал";
-        MultiCASPipeline.runPipeline(reader, builder.createAggregateDescription(), createEngineDescription(TestConsumer.class));
+        ANSWER = "Вилку следует держать правой рукой";
+        runPipeline(Tested.class, "игнор", builder, TestConsumer.class);
     }
 }

@@ -1,27 +1,24 @@
 package cz.brmlab.yodaqa.answer.analysis;
 
-import static org.apache.uima.fit.factory.AnalysisEngineFactory.*;
-import static org.apache.uima.fit.factory.CollectionReaderFactory.createReaderDescription;
+import static org.apache.uima.fit.factory.AnalysisEngineFactory.createPrimitiveDescription;
 
 import java.util.*;
 
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
-import org.apache.uima.collection.CollectionReaderDescription;
 import org.apache.uima.fit.component.JCasConsumer_ImplBase;
 import org.apache.uima.fit.factory.AggregateBuilder;
 import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
 import org.junit.*;
 
-import cz.brmlab.yodaqa.SimpleQuestion;
+import cz.brmlab.yodaqa.*;
 import cz.brmlab.yodaqa.analysis.ansscore.*;
-import cz.brmlab.yodaqa.flow.MultiCASPipeline;
 import cz.brmlab.yodaqa.model.AnswerHitlist.Answer;
-import cz.brmlab.yodaqa.pipeline.*;
+import cz.brmlab.yodaqa.pipeline.EvidenceDiffusion;
 
 /*
  */
-public class EvidenceDiffusionTest {
+public class EvidenceDiffusionTest extends MultiCASPipelineTest {
 
     public static class Tested extends SimpleQuestion {
 
@@ -79,11 +76,6 @@ public class EvidenceDiffusionTest {
         AggregateBuilder builder = new AggregateBuilder();
         builder.add(createPrimitiveDescription(EvidenceDiffusion.class));
 
-        CollectionReaderDescription reader = createReaderDescription(
-                Tested.class,
-                SimpleQuestion.PARAM_LANGUAGE, "en",
-                SimpleQuestion.PARAM_INPUT, "игнор");
-
-        MultiCASPipeline.runPipeline(reader, builder.createAggregateDescription(), createEngineDescription(TestConsumer.class));
+        runPipeline(Tested.class, "это игнорируетсяt", builder, TestConsumer.class);
     }
 }

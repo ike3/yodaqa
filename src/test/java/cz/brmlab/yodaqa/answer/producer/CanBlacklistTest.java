@@ -1,14 +1,11 @@
 package cz.brmlab.yodaqa.answer.producer;
 
-import static org.apache.uima.fit.factory.AnalysisEngineFactory.*;
-import static org.apache.uima.fit.factory.CollectionReaderFactory.createReaderDescription;
+import static org.apache.uima.fit.factory.AnalysisEngineFactory.createPrimitiveDescription;
 
 import java.util.*;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
-import org.apache.uima.cas.CAS;
-import org.apache.uima.collection.CollectionReaderDescription;
 import org.apache.uima.fit.component.JCasConsumer_ImplBase;
 import org.apache.uima.fit.factory.AggregateBuilder;
 import org.apache.uima.fit.util.JCasUtil;
@@ -16,16 +13,13 @@ import org.apache.uima.jcas.JCas;
 import org.junit.*;
 
 import cz.brmlab.yodaqa.*;
-import cz.brmlab.yodaqa.analysis.passage.*;
-import cz.brmlab.yodaqa.flow.MultiCASPipeline;
+import cz.brmlab.yodaqa.analysis.passage.CanBlacklist;
 import cz.brmlab.yodaqa.model.SearchResult.CandidateAnswer;
-import cz.brmlab.yodaqa.provider.SyncOpenNlpNameFinder;
-import de.tudarmstadt.ukp.dkpro.core.tokit.BreakIteratorSegmenter;
 
 /*
  * Сравнивает Clue и NamedEntity
  */
-public class CanBlacklistTest {
+public class CanBlacklistTest extends MultiCASPipelineTest {
 
     private static String EXPECTED_TEXT;
     private static String INPUT = "между the слон and book";
@@ -74,12 +68,8 @@ public class CanBlacklistTest {
         AggregateBuilder builder = new AggregateBuilder();
         builder.add(createPrimitiveDescription(CanBlacklist.class));
 
-        CollectionReaderDescription reader = createReaderDescription(
-                Tested.class,
-                SimpleQuestion.PARAM_LANGUAGE, "en",
-                SimpleQuestion.PARAM_INPUT, INPUT);
-
+        INPUT = "между the слон and book";
         EXPECTED_TEXT = "слон,book";
-        MultiCASPipeline.runPipeline(reader, builder.createAggregateDescription(), createEngineDescription(TestConsumer.class));
+        runPipeline(Tested.class, INPUT, builder, TestConsumer.class);
     }
 }

@@ -1,6 +1,6 @@
 package cz.brmlab.yodaqa.answer.analysis;
 
-import static org.apache.uima.fit.factory.AnalysisEngineFactory.*;
+import static org.apache.uima.fit.factory.AnalysisEngineFactory.createPrimitiveDescription;
 import static org.apache.uima.fit.factory.CollectionReaderFactory.createReaderDescription;
 
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
@@ -11,21 +11,18 @@ import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
 import org.junit.*;
 
-import cz.brmlab.yodaqa.SimpleQuestion;
+import cz.brmlab.yodaqa.*;
 import cz.brmlab.yodaqa.analysis.ansscore.*;
-import cz.brmlab.yodaqa.analysis.answer.*;
-import cz.brmlab.yodaqa.analysis.tycor.*;
-import cz.brmlab.yodaqa.flow.MultiCASPipeline;
+import cz.brmlab.yodaqa.analysis.tycor.LATMatchTyCor;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerInfo;
-import cz.brmlab.yodaqa.model.TyCor.*;
-import de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.POS;
+import cz.brmlab.yodaqa.model.TyCor.WordnetLAT;
 
 /*
  * Сравнивает LATs вопроса и ответа. Берет только WordnetLAT!
  * Устанавливает AF.SpWordNet в e^spec в случае совпадения
  * текст LAT должен быть полностью идентичным
  */
-public class LATMatchTyCorTest {
+public class LATMatchTyCorTest extends MultiCASPipelineTest {
 
     public static class Tested extends SimpleQuestion {
 
@@ -81,6 +78,6 @@ public class LATMatchTyCorTest {
                 SimpleQuestion.PARAM_LANGUAGE, "en",
                 SimpleQuestion.PARAM_INPUT, "игнор");
 
-        MultiCASPipeline.runPipeline(reader, builder.createAggregateDescription(), createEngineDescription(TestConsumer.class));
+        runPipeline(Tested.class, "это игнорируется", builder, TestConsumer.class);
     }
 }

@@ -1,6 +1,9 @@
 package cz.brmlab.yodaqa.pipeline;
 
 import cz.brmlab.yodaqa.analysis.question.QuestionAnalysisEngineRu;
+
+import static org.apache.uima.fit.factory.AnalysisEngineFactory.createPrimitiveDescription;
+
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.fit.factory.AggregateBuilder;
@@ -85,6 +88,7 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 		AggregateBuilder builder = new AggregateBuilder();
 
 		boolean outputsNewCASes = buildPipeline(builder);
+		builder.add(createPrimitiveDescription(CleanupTempFiles.class));
 
 		builder.setFlowControllerDescription(
 				FlowControllerFactory.createFlowControllerDescription(
