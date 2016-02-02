@@ -68,6 +68,7 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 		System.setProperty("dkpro.core.resourceprovider.sharable." + StanfordParser.class.getName(), "true");
 		System.setProperty("dkpro.core.resourceprovider.sharable." + StanfordPosTagger.class.getName(), "true");
 		System.setProperty("dkpro.core.resourceprovider.sharable." + OpenNlpNameFinder.class.getName(), "true");
+		System.setProperty("cz.brmlab.yodaqa.spotlight_name_finder_endpoint", "http://spotlight.sztaki.hu:2227/rest/annotate");
 	}
 
 	public static AnalysisEngineDescription createEngineDescription() throws ResourceInitializationException {

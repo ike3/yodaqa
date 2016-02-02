@@ -1,15 +1,17 @@
 package cz.brmlab.yodaqa.analysis.passextract;
 
-import de.tudarmstadt.ukp.dkpro.core.stanfordnlp.StanfordSegmenter;
-
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
 import org.apache.uima.cas.CAS;
-import org.apache.uima.fit.factory.AggregateBuilder;
+import org.apache.uima.fit.factory.*;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import cz.brmlab.yodaqa.analysis.MultiLanguageParser;
 import cz.brmlab.yodaqa.flow.asb.ParallelEngineFactory;
+import de.tudarmstadt.ukp.dkpro.core.stanfordnlp.*;
+import de.tudarmstadt.ukp.dkpro.core.tokit.BreakIteratorSegmenter;
+import de.tudarmstadt.ukp.dkpro.core.treetagger.TreeTaggerPosTagger;
 
 import static org.apache.uima.fit.factory.AnalysisEngineFactory.createPrimitiveDescription;
 
@@ -27,6 +29,23 @@ public class PassageExtractorAE /* XXX: extends AggregateBuilder ? */ {
 	public static final int PARAM_PASS_SEL_BYCLUE = 0;
 	public static final int PARAM_PASS_SEL_FIRST = 1;
 
+    public static class MultiLanguageParserExt extends MultiLanguageParser {
+        @Override
+        protected AnalysisEngineDescription createEngineDescription(String language) throws ResourceInitializationException {
+            AggregateBuilder builder = new AggregateBuilder();
+            if ("en".equals(language)) {
+                builder.add(createPrimitiveDescription(StanfordSegmenter.class),
+                        CAS.NAME_DEFAULT_SOFA, "Result");
+            } else {
+                builder.add(createPrimitiveDescription(BreakIteratorSegmenter.class),
+                        CAS.NAME_DEFAULT_SOFA, "Result");
+                builder.add(createPrimitiveDescription(TreeTaggerPosTagger.class),
+                        CAS.NAME_DEFAULT_SOFA, "Result");
+            }
+            return builder.createAggregateDescription();
+        }
+    }
+
 	public static AnalysisEngineDescription createEngineDescription(int passSelection)
 			throws ResourceInitializationException {
 		AggregateBuilder builder = new AggregateBuilder();
@@ -36,8 +55,7 @@ public class PassageExtractorAE /* XXX: extends AggregateBuilder ? */ {
 		// with incomplete sentences e.g. separated by paragraphs etc.
 		// However, StanfordSegmenter handles numerical quantities
 		// (like 10,900) much better.
-		builder.add(createPrimitiveDescription(StanfordSegmenter.class),
-			CAS.NAME_DEFAULT_SOFA, "Result");
+		builder.add(createPrimitiveDescription(MultiLanguageParserExt.class));
 
 		/* At this point, we can filter the source to keep
 		 * only sentences and tokens we care about: */

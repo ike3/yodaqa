@@ -32,7 +32,12 @@ public abstract class MultiLanguageParser extends JCasAnnotator_ImplBase {
 	protected abstract AnalysisEngineDescription createEngineDescription(String language) throws ResourceInitializationException;
 
     public void process(JCas jcas) throws AnalysisEngineProcessException {
-	    pipelines.get(jcas.getDocumentLanguage()).process(jcas);
+	    AnalysisEngine analysisEngine = pipelines.get(jcas.getDocumentLanguage());
+	    if (analysisEngine != null) {
+	        analysisEngine.process(jcas);
+	    } else {
+	        logger.error("MultiLanguageParser has no engine for language " + jcas.getDocumentLanguage());
+	    }
 	}
 
 	public void destroy() {

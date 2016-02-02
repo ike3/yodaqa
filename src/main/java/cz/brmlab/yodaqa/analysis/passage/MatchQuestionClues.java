@@ -51,6 +51,7 @@ public class MatchQuestionClues extends JCasAnnotator_ImplBase {
 
 		/* XXX: Do not generate for about-clues? */
 
+        CanonicSentenceList sentences = CanonicSentenceList.build(passagesView, null);
 		for (Passage p: JCasUtil.select(passagesView, Passage.class)) {
 			for (Clue qclue : JCasUtil.select(questionView, Clue.class)) {
 				Matcher m = Pattern.compile(PassByClue.getClueRegex(qclue, false)).matcher(p.getCoveredText());
@@ -64,7 +65,6 @@ public class MatchQuestionClues extends JCasAnnotator_ImplBase {
 					logger.debug("GEN {} / {}", qclue.getClass().getSimpleName(), qlc.getCoveredText());
 				}
 
-				CanonicSentenceList sentences = CanonicSentenceList.build(passagesView, null);
                 m = Pattern.compile(PassByClue.getClueRegex(qclue, false)).matcher(sentences.getText());
                 while (m.find()) {
                     /* We have a match! */

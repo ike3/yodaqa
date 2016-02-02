@@ -89,6 +89,7 @@ public class PassByClue extends JCasAnnotator_ImplBase {
 		for (Sentence sentence : JCasUtil.select(resultView, Sentence.class)) {
 			List<PassageFeature> features = new LinkedList<PassageFeature>();
 			String featureStr = "";
+            String canonicText = CanonicSentenceList.build(resultView, sentence).getText();
 
 			/* Collect answer features. */
 			AnswerFV afv = new AnswerFV();
@@ -99,7 +100,7 @@ public class PassByClue extends JCasAnnotator_ImplBase {
 			 * matched. */
 			for (Clue clue : JCasUtil.select(questionView, Clue.class)) {
 			    String regex = getClueRegex(clue);
-                if (!sentence.getCoveredText().matches(regex) && !CanonicSentenceList.build(resultView, sentence).getText().matches(regex)) {
+                if (!sentence.getCoveredText().matches(regex) && !canonicText.matches(regex)) {
                     continue;
                 }
 				/* Match! */
@@ -246,6 +247,7 @@ public class PassByClue extends JCasAnnotator_ImplBase {
             if (sb.length() > 0) {
                 result.text = sb.substring(0, sb.length() - 1);
             }
+            logger.debug("View content '{}' transformed to '{}'", passagesView.getDocumentText(), result.text);
             return result;
 	    }
 

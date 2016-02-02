@@ -1,17 +1,21 @@
 package cz.brmlab.yodaqa.analysis.passage;
 
 import de.tudarmstadt.ukp.dkpro.core.languagetool.LanguageToolLemmatizer;
-import de.tudarmstadt.ukp.dkpro.core.stanfordnlp.StanfordParser;
+import de.tudarmstadt.ukp.dkpro.core.maltparser.MaltParser;
+import de.tudarmstadt.ukp.dkpro.core.stanfordnlp.*;
+import de.tudarmstadt.ukp.dkpro.core.tokit.BreakIteratorSegmenter;
+import de.tudarmstadt.ukp.dkpro.core.treetagger.TreeTaggerPosTagger;
 
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.fit.component.CasDumpWriter;
-import org.apache.uima.fit.factory.AggregateBuilder;
+import org.apache.uima.fit.factory.*;
 import org.apache.uima.resource.ResourceInitializationException;
+import org.dbpedia.spotlight.uima.SpotlightNameFinder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cz.brmlab.yodaqa.analysis.PipelineLogger;
+import cz.brmlab.yodaqa.analysis.*;
 import cz.brmlab.yodaqa.analysis.passage.biotagger.CanByBIOTaggerAE;
 import cz.brmlab.yodaqa.provider.OpenNlpNamedEntities;
 
@@ -29,6 +33,45 @@ import static org.apache.uima.fit.factory.AnalysisEngineFactory.createPrimitiveD
 public class PassageAnalysisAE /* XXX: extends AggregateBuilder ? */ {
 	final static Logger logger = LoggerFactory.getLogger(PassageAnalysisAE.class);
 
+    public static class MultiLanguageParserExt extends MultiLanguageParser {
+        @Override
+        protected AnalysisEngineDescription createEngineDescription(String language) throws ResourceInitializationException {
+            AggregateBuilder builder = new AggregateBuilder();
+            if ("en".equals(language)) {
+                /* POS, constituents, dependencies: */
+                builder.add(createPrimitiveDescription(PipelineLogger.class,
+                            PipelineLogger.PARAM_LOG_MESSAGE, "Parsing"));
+                builder.add(createPrimitiveDescription(
+                        StanfordParser.class,
+                        StanfordParser.PARAM_MAX_TOKENS, 50, // more takes a lot of RAM and is sloow, StanfordParser is O(N^2)
+                        StanfordParser.PARAM_WRITE_POS, true),
+                    CAS.NAME_DEFAULT_SOFA, "PickedPassages");
+
+                /* Lemma features: */
+                builder.add(createPrimitiveDescription(PipelineLogger.class,
+                            PipelineLogger.PARAM_LOG_MESSAGE, "Lemmatization"));
+                builder.add(createPrimitiveDescription(LanguageToolLemmatizer.class),
+                    CAS.NAME_DEFAULT_SOFA, "PickedPassages");
+
+                /* Named Entities: */
+                builder.add(createPrimitiveDescription(PipelineLogger.class,
+                            PipelineLogger.PARAM_LOG_MESSAGE, "Named Entities"));
+                builder.add(OpenNlpNamedEntities.createEngineDescription(),
+                    CAS.NAME_DEFAULT_SOFA, "PickedPassages");
+            } else {
+                builder.add(createPrimitiveDescription(TreeTaggerPosTagger.class),
+                        CAS.NAME_DEFAULT_SOFA, "PickedPassages");
+                builder.add(createPrimitiveDescription(MaltParser.class),
+                        CAS.NAME_DEFAULT_SOFA, "PickedPassages");
+                builder.add(AnalysisEngineFactory.createEngineDescription(
+                        SpotlightNameFinder.class,
+                        SpotlightNameFinder.PARAM_ENDPOINT, System.getProperty("cz.brmlab.yodaqa.spotlight_name_finder_endpoint")),
+                        CAS.NAME_DEFAULT_SOFA, "PickedPassages");
+            }
+            return builder.createAggregateDescription();
+        }
+    }
+
 	public static AnalysisEngineDescription createEngineDescription() throws ResourceInitializationException {
 		AggregateBuilder builder = new AggregateBuilder();
 
@@ -39,27 +82,7 @@ public class PassageAnalysisAE /* XXX: extends AggregateBuilder ? */ {
 		/* Our passages are already split to sentences
 		 * and tokenized. */
 
-		/* POS, constituents, dependencies: */
-		builder.add(createPrimitiveDescription(PipelineLogger.class,
-					PipelineLogger.PARAM_LOG_MESSAGE, "Parsing"));
-		builder.add(createPrimitiveDescription(
-				StanfordParser.class,
-				StanfordParser.PARAM_MAX_TOKENS, 50, // more takes a lot of RAM and is sloow, StanfordParser is O(N^2)
-				StanfordParser.PARAM_WRITE_POS, true),
-			CAS.NAME_DEFAULT_SOFA, "PickedPassages");
-
-		/* Lemma features: */
-		builder.add(createPrimitiveDescription(PipelineLogger.class,
-					PipelineLogger.PARAM_LOG_MESSAGE, "Lemmatization"));
-		builder.add(createPrimitiveDescription(LanguageToolLemmatizer.class),
-			CAS.NAME_DEFAULT_SOFA, "PickedPassages");
-
-		/* Named Entities: */
-		builder.add(createPrimitiveDescription(PipelineLogger.class,
-					PipelineLogger.PARAM_LOG_MESSAGE, "Named Entities"));
-		builder.add(OpenNlpNamedEntities.createEngineDescription(),
-			CAS.NAME_DEFAULT_SOFA, "PickedPassages");
-
+		builder.add(createPrimitiveDescription(MultiLanguageParserExt.class));
 
 		builder.add(createPrimitiveDescription(PipelineLogger.class,
 					PipelineLogger.PARAM_LOG_MESSAGE, "QA analysis"));
@@ -75,6 +98,7 @@ public class PassageAnalysisAE /* XXX: extends AggregateBuilder ? */ {
 		/* CandidateAnswer from each NP constituent that does not match
 		 * any of the clues. */
 		builder.add(createPrimitiveDescription(CanByNPSurprise.class));
+		builder.add(createPrimitiveDescription(CanByFocusSurprise.class));
 		/* CandidateAnswer from each named entity that does not match
 		 * any of the clues. */
 		builder.add(createPrimitiveDescription(CanByNESurprise.class));
