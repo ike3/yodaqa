@@ -3,6 +3,7 @@ package cz.brmlab.yodaqa.analysis.question;
 import cz.brmlab.yodaqa.analysis.RootGenerator;
 import cz.brmlab.yodaqa.analysis.TreeTaggerPosToSynTagRus;
 import cz.brmlab.yodaqa.analysis.tycor.LATByWordnet;
+import cz.brmlab.yodaqa.analysis.tycor.LATByWordnetGeneral;
 import cz.brmlab.yodaqa.io.debug.DumpConstituents;
 import de.tudarmstadt.ukp.dkpro.core.maltparser.MaltParser;
 import de.tudarmstadt.ukp.dkpro.core.tokit.BreakIteratorSegmenter;
@@ -26,7 +27,7 @@ public class QuestionAnalysisEngineRu {
         builder.add(AnalysisEngineFactory.createEngineDescription(BreakIteratorSegmenter.class));
         //POS tagging
         builder.add(AnalysisEngineFactory.createEngineDescription(TreeTaggerPosTagger.class));
-        builder.add(AnalysisEngineFactory.createEngineDescription(TreeTaggerPosToSynTagRus.class));
+//        builder.add(AnalysisEngineFactory.createEngineDescription(TreeTaggerPosToSynTagRus.class));
         //Dependency tagging
         builder.add(AnalysisEngineFactory.createEngineDescription(MaltParser.class));
         builder.add(AnalysisEngineFactory.createEngineDescription(RootGenerator.class));
@@ -37,10 +38,10 @@ public class QuestionAnalysisEngineRu {
         ));
         builder.add(AnalysisEngineFactory.createEngineDescription(FocusGeneratorRu.class));
         builder.add(AnalysisEngineFactory.createEngineDescription(SVGenerator.class));
-        builder.add(AnalysisEngineFactory.createEngineDescription(LATByFocus.class));
-        builder.add(AnalysisEngineFactory.createEngineDescription(LATBySV.class));
-//        builder.add(AnalysisEngineFactory.createEngineDescription(LATByWordnet.class,
-//                LATByWordnet.PARAM_EXPAND_SYNSET_LATS, false));
+        builder.add(AnalysisEngineFactory.createEngineDescription(LATByFocusRu.class));
+        builder.add(AnalysisEngineFactory.createEngineDescription(LATBySVRu.class));
+        builder.add(AnalysisEngineFactory.createEngineDescription(LATByWordnetGeneral.class,
+                LATByWordnet.PARAM_EXPAND_SYNSET_LATS, false));
 
 
         if (logger.isDebugEnabled()) {

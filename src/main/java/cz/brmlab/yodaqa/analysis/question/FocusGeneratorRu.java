@@ -13,15 +13,17 @@ import java.util.Collection;
 
 public class FocusGeneratorRu extends JCasAnnotator_ImplBase {
 
+    private final String QUEST_CONJ = "когда|кто|кому|где|сколько";
+
     @Override
     public void process(JCas aJCas) throws AnalysisEngineProcessException {
         Token focusTok = null;
         Annotation focus = null;
         Collection<Dependency> dependencies = JCasUtil.select(aJCas, Dependency.class);
 
-        for(Dependency dependency: dependencies) {
-            if(dependency.getDependencyType().equals("предл")) {
-                focusTok = dependency.getGovernor();
+        for (Dependency dependency : dependencies) {
+            if (dependency.getDependent().getLemma().getValue().matches(QUEST_CONJ) && dependency.getDependent().getBegin() == 0) {
+                focusTok = dependency.getDependent();
                 focus = focusTok;
                 break;
             }
@@ -29,9 +31,7 @@ public class FocusGeneratorRu extends JCasAnnotator_ImplBase {
 
         if(focus == null) {
             for(Dependency dependency: dependencies) {
-                if (dependency.getDependencyType().equals("опред")
-                        && !(dependency.getGovernor().getPos().getPosValue().equals("S")
-                        && dependency.getDependent().getPos().getPosValue().equals("V"))) {
+                if(dependency.getDependencyType().equals("предл")) {
                     focusTok = dependency.getGovernor();
                     focus = focusTok;
                     break;
@@ -40,8 +40,10 @@ public class FocusGeneratorRu extends JCasAnnotator_ImplBase {
         }
 
         if(focus == null) {
-            for (Dependency dependency : dependencies) {
-                if (dependency.getGovernor().getLemma().getValue().equals("кто") && dependency.getGovernor().getBegin() == 0) {
+            for(Dependency dependency: dependencies) {
+                if (dependency.getDependencyType().equals("опред")
+                        && !(dependency.getGovernor().getPos().getPosValue().equals("S")
+                        && dependency.getDependent().getPos().getPosValue().equals("V"))) {
                     focusTok = dependency.getGovernor();
                     focus = focusTok;
                     break;
