@@ -1,6 +1,7 @@
 package cz.brmlab.yodaqa.analysis.question;
 
 import cz.brmlab.yodaqa.model.Question.Focus;
+import de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.N;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
 import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.dependency.Dependency;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
@@ -26,6 +27,16 @@ public class FocusGeneratorRu extends JCasAnnotator_ImplBase {
                 focusTok = dependency.getDependent();
                 focus = focusTok;
                 break;
+            }
+        }
+
+        if(focus == null) {
+            for(Dependency dependency: dependencies) {
+                if(dependency.getDependencyType().equals("огранич") && dependency.getDependent().getPos() instanceof N) {
+                    focusTok = dependency.getDependent();
+                    focus = focusTok;
+                    break;
+                }
             }
         }
 
