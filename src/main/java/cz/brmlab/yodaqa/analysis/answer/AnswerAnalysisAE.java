@@ -95,6 +95,9 @@ public class AnswerAnalysisAE /* XXX: extends AggregateBuilder ? */ {
 		builder.add(createPrimitiveDescription(LATByDBpedia.class),
 			CAS.NAME_DEFAULT_SOFA, "Answer");
 
+		builder.add(createPrimitiveDescription(LATBySpeechKit.class),
+		        CAS.NAME_DEFAULT_SOFA, "Answer");
+
 		/* Post-process LATs gathered so far: */
 		/* Convert plurals to singulars, spin off single-word LATs
 		 * from multi-words. */
