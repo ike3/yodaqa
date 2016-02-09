@@ -1,24 +1,18 @@
 package cz.brmlab.yodaqa.provider.rdf;
 
+import com.google.gson.Gson;
+import com.google.gson.stream.JsonReader;
+import com.hp.hpl.jena.rdf.model.Literal;
+import cz.brmlab.yodaqa.Language;
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.slf4j.Logger;
+
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.net.*;
+import java.nio.charset.Charset;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
-
-import com.google.gson.stream.JsonReader;
-import com.google.gson.Gson;
-import com.hp.hpl.jena.rdf.model.Literal;
-
-import org.slf4j.Logger;
 
 /** A wrapper around DBpedia "Titles" dataset that maps titles to
  * Wikipedia articles. The main point of using this is to find out
@@ -30,7 +24,7 @@ import org.slf4j.Logger;
  * and disambiguation pages. */
 
 public class DBpediaTitles extends DBpediaLookup {
-	protected static final String fuzzyLookupUrl = "http://dbp-labels.ailao.eu:5000";
+
 	protected static final String crossWikiLookupUrl = "http://dbp-labels.ailao.eu:5001";
 
 	/** A container of enwiki article metadata.
@@ -92,13 +86,13 @@ public class DBpediaTitles extends DBpediaLookup {
 	}
 
 	/** Query for a given title, returning a set of articles. */
-	public List<Article> query(String title, Logger logger) {
+	public List<Article> query(String title, String language, String fuzzyLookupUrl, Logger logger) {
 		for (String titleForm : cookedTitles(title)) {
 			List<Article> fuzzyLookupEntities;
 			List<Article> crossWikiEntities;
 			while (true) {
 				try {
-					fuzzyLookupEntities = queryFuzzyLookup(titleForm, logger);
+					fuzzyLookupEntities = queryFuzzyLookup(titleForm, language, fuzzyLookupUrl, logger);
 					crossWikiEntities = queryCrossWikiLookup(titleForm, logger);
 					break; // Success!
 				} catch (IOException e) {
@@ -242,11 +236,17 @@ public class DBpediaTitles extends DBpediaLookup {
 	 *
 	 * XXX: This method should probably be in a different
 	 * provider subpackage altogether... */
-	public List<Article> queryFuzzyLookup(String label, Logger logger) throws IOException {
+	public List<Article> queryFuzzyLookup(String label, String language, String fuzzyLookupUrl, Logger logger) throws IOException {
 		List<Article> results = new LinkedList<>();
-		String capitalisedLabel = super.capitalizeTitle(label);
-		String encodedName = URLEncoder.encode(capitalisedLabel, "UTF-8").replace("+", "%20");
-		String requestURL = fuzzyLookupUrl + "/search/" + encodedName + "?ver=1";
+		String encodedName = super.capitalizeTitle(label);
+		String requestURL = null;
+		if(language.equals(Language.RUSSIAN)) {
+			encodedName = StringEscapeUtils.escapeJava(encodedName);
+		}
+
+		encodedName = URLEncoder.encode(encodedName, "UTF-8").replace("+", "%20");
+
+		requestURL = fuzzyLookupUrl + "/search/" + encodedName + "?ver=1";
 
 		URL request = new URL(requestURL);
 		URLConnection connection = request.openConnection();
@@ -258,6 +258,20 @@ public class DBpediaTitles extends DBpediaLookup {
 			jr.beginArray();
 			while (jr.hasNext()) {
 				Article o = gson.fromJson(jr, Article.class);
+				if(o != null && language.equals(Language.RUSSIAN)) {
+					if(o.getName() != null) {
+						o.name = StringEscapeUtils.unescapeJava(o.getName());
+					}
+					if(o.getMatchedLabel() != null) {
+						o.matchedLabel = StringEscapeUtils.unescapeJava(o.getMatchedLabel());
+					}
+					if(o.getCanonLabel() != null) {
+						o.canonLabel = StringEscapeUtils.unescapeJava(o.getCanonLabel());
+					}
+					if(o.getDescription() != null) {
+						o.description = StringEscapeUtils.unescapeJava(o.getDescription());
+					}
+				}
 				// Record all exact-matching entities,
 				// or the single nearest fuzzy-matched
 				// one.

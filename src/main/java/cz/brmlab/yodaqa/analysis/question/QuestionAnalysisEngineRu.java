@@ -1,5 +1,6 @@
 package cz.brmlab.yodaqa.analysis.question;
 
+import cz.brmlab.yodaqa.Language;
 import cz.brmlab.yodaqa.analysis.RootGenerator;
 import cz.brmlab.yodaqa.analysis.TreeTaggerPosToSynTagRus;
 import cz.brmlab.yodaqa.analysis.tycor.LATByWordnet;
@@ -45,6 +46,14 @@ public class QuestionAnalysisEngineRu {
         builder.add(AnalysisEngineFactory.createEngineDescription(ClueBySV.class));
         builder.add(AnalysisEngineFactory.createEngineDescription(ClueByNE.class));
         builder.add(AnalysisEngineFactory.createEngineDescription(ClueByLAT.class));
+        builder.add(AnalysisEngineFactory.createEngineDescription(CluesToConcepts.class,
+                CluesToConcepts.PARAM_LANGUAGE, Language.RUSSIAN,
+                CluesToConcepts.PARAM_FUZZY_LOOKUP_URL, System.getProperty("cz.brmlab.yodaqa.fuzzy_lookup_url")));
+        /* Merge any duplicate clues */
+        builder.add(AnalysisEngineFactory.createEngineDescription(CluesMergeByText.class));
+        builder.add(AnalysisEngineFactory.createEngineDescription(DashboardHook.class));
+        /* Classify question into classes*/
+        builder.add(AnalysisEngineFactory.createEngineDescription(ClassClassifier.class));
 
 
         if (logger.isDebugEnabled()) {

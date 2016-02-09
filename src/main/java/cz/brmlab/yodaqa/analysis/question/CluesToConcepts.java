@@ -1,26 +1,14 @@
 package cz.brmlab.yodaqa.analysis.question;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.PriorityQueue;
-import java.util.TreeMap;
-
+import cz.brmlab.yodaqa.Language;
 import cz.brmlab.yodaqa.analysis.answer.SyntaxCanonization;
-import cz.brmlab.yodaqa.model.Question.ClueSubjectNE;
-import cz.brmlab.yodaqa.model.Question.ClueSubjectPhrase;
-import cz.brmlab.yodaqa.model.Question.QuestionInfo;
-
+import cz.brmlab.yodaqa.model.Question.*;
+import cz.brmlab.yodaqa.provider.rdf.DBpediaTitles;
+import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.fit.component.JCasAnnotator_ImplBase;
+import org.apache.uima.fit.descriptor.ConfigurationParameter;
 import org.apache.uima.fit.util.FSCollectionFactory;
 import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
@@ -30,17 +18,7 @@ import org.apache.uima.resource.ResourceInitializationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cz.brmlab.yodaqa.model.Question.Clue;
-import cz.brmlab.yodaqa.model.Question.ClueConcept;
-import cz.brmlab.yodaqa.model.Question.ClueLAT;
-import cz.brmlab.yodaqa.model.Question.ClueNE;
-import cz.brmlab.yodaqa.model.Question.ClueNgram;
-import cz.brmlab.yodaqa.model.Question.CluePhrase;
-import cz.brmlab.yodaqa.model.Question.ClueSubject;
-import cz.brmlab.yodaqa.model.Question.Concept;
-import cz.brmlab.yodaqa.provider.rdf.DBpediaTitles;
-
-import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
+import java.util.*;
 
 /**
  * Potentially convert CluePhrase and ClueNE instances to ClueConcept
@@ -62,6 +40,16 @@ import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
  * to the shortest. */
 
 public class CluesToConcepts extends JCasAnnotator_ImplBase {
+
+	public static final String PARAM_LANGUAGE = "language";
+	@ConfigurationParameter(name=PARAM_LANGUAGE, defaultValue = Language.ENGLISH)
+	private String LANGUAGE;
+
+	public static final String PARAM_FUZZY_LOOKUP_URL = "fuzzyLookupUrl";
+	@ConfigurationParameter(name=PARAM_FUZZY_LOOKUP_URL, defaultValue = "http://dbp-labels.ailao.eu:5000")
+	private String FUZZY_LOOKUP_URL;
+
+
 	final Logger logger = LoggerFactory.getLogger(CluesToConcepts.class);
 
 	final DBpediaTitles dbp = new DBpediaTitles();
@@ -100,7 +88,7 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 			/* Execute entity linking from clue text to
 			 * a corresponding enwiki article.  This internally
 			 * involves also some fuzzy lookups and such. */
-			List<DBpediaTitles.Article> results = dbp.query(clueLabel, logger);
+			List<DBpediaTitles.Article> results = dbp.query(clueLabel, LANGUAGE, FUZZY_LOOKUP_URL, logger);
 			if (results.size() == 0)
 				continue; // no linkage
 
@@ -117,7 +105,7 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 				if (SyntaxCanonization.getCanonText(clueLabel).toLowerCase().matches(labelBlacklist))
 					continue; // explicit blacklist
 
-				List<DBpediaTitles.Article> allResults = dbp.query(clueLabel, logger);
+				List<DBpediaTitles.Article> allResults = dbp.query(clueLabel, LANGUAGE, FUZZY_LOOKUP_URL, logger);
 				/* Require a sharp DBpedia match or we get
 				 * a massive amount of noise. */
 				List<DBpediaTitles.Article> results = new ArrayList<>();
