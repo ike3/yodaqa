@@ -7,7 +7,7 @@ import java.util.*;
 import org.apache.commons.lang.StringUtils;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.fit.component.JCasConsumer_ImplBase;
-import org.apache.uima.fit.factory.AggregateBuilder;
+import org.apache.uima.fit.factory.*;
 import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
 import org.junit.*;
@@ -17,6 +17,7 @@ import cz.brmlab.yodaqa.analysis.ansscore.AnswerFV;
 import cz.brmlab.yodaqa.analysis.tycor.LATNormalize;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerInfo;
 import cz.brmlab.yodaqa.model.TyCor.LAT;
+import de.tudarmstadt.ukp.dkpro.core.tokit.BreakIteratorSegmenter;
 
 /*
  */
@@ -77,6 +78,16 @@ public class LATNormalizeTest extends MultiCASPipelineTest {
 
         INPUT = "several suns";
         EXPECTED_OUTPUT = "several sun,sun";
+        runPipeline(Tested.class, "ignore", builder, TestConsumer.class);
+    }
+
+    @Test
+    public void runDate() throws Exception {
+        AggregateBuilder builder = new AggregateBuilder();
+        builder.add(createPrimitiveDescription(LATNormalize.class));
+
+        INPUT = "23 Feb 2015";
+        EXPECTED_OUTPUT = "23 Feb 2015,Feb";
         runPipeline(Tested.class, "ignore", builder, TestConsumer.class);
     }
 }
