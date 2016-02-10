@@ -140,7 +140,7 @@ public class LATNormalize extends JCasAnnotator_ImplBase {
 			LATCacheEntry lce = latCache.get(lat.getText());
 			if (lce == null) {
 				try {
-					lce = processLAT(lat.getText(), jcas.getDocumentLanguage());
+					lce = processLAT(lat.getText());
 				} catch (Exception e) {
 					throw new AnalysisEngineProcessException(e);
 				}
@@ -159,11 +159,11 @@ public class LATNormalize extends JCasAnnotator_ImplBase {
 		}
 	}
 
-	protected LATCacheEntry processLAT(String text, String language) throws Exception {
+	protected LATCacheEntry processLAT(String text) throws Exception {
 		/* Prepare a tiny JCas with the processed LAT. */
 		JCas jcas = JCasFactory.createJCas();
 		jcas.setDocumentText(text);
-		jcas.setDocumentLanguage(language);
+		jcas.setDocumentLanguage(MultiLanguageParser.getLanguage(text));
 
 		/* Pre-do segmentation. */
 		Sentence s = new Sentence(jcas);
@@ -198,7 +198,8 @@ public class LATNormalize extends JCasAnnotator_ImplBase {
 			 */
 			/* N.B. this heuristic is also used in LATByMultiWord. */
 			for (Token v : JCasUtil.select(jcas, Token.class)) {
-				if (v.getPos().getPosValue().matches("^N.*")) {
+				if (v.getPos() != null && v.getPos().getPosValue() != null &&
+				        v.getPos().getPosValue().matches("^N.*")) {
 					head = v;
 				} else if (head != null) {
 					break;
