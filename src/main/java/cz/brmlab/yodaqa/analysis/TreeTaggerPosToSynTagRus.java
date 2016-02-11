@@ -32,6 +32,7 @@ public class TreeTaggerPosToSynTagRus extends JCasAnnotator_ImplBase {
             for(Map.Entry<String, String> entry: POS_VALUES.entrySet()) {
                 if(token.getPos().getPosValue().matches(entry.getKey())) {
                     token.getPos().setPosValue(entry.getValue());
+                    break;
                 }
             }
         }

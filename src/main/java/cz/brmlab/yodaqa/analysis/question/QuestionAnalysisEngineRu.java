@@ -41,11 +41,13 @@ public class QuestionAnalysisEngineRu {
         builder.add(AnalysisEngineFactory.createEngineDescription(SVGenerator.class));
         builder.add(AnalysisEngineFactory.createEngineDescription(LATByFocusRu.class));
         builder.add(AnalysisEngineFactory.createEngineDescription(LATBySVRu.class));
+        builder.add(AnalysisEngineFactory.createEngineDescription(LatByNouns.class));
         builder.add(AnalysisEngineFactory.createEngineDescription(LATByWordnetGeneral.class,
                 LATByWordnet.PARAM_EXPAND_SYNSET_LATS, false));
         builder.add(AnalysisEngineFactory.createEngineDescription(ClueBySV.class));
         builder.add(AnalysisEngineFactory.createEngineDescription(ClueByNE.class));
         builder.add(AnalysisEngineFactory.createEngineDescription(ClueByLAT.class));
+        builder.add(AnalysisEngineFactory.createEngineDescription(ClueByNouns.class));
         builder.add(AnalysisEngineFactory.createEngineDescription(CluesToConcepts.class,
                 CluesToConcepts.PARAM_LANGUAGE, Language.RUSSIAN,
                 CluesToConcepts.PARAM_FUZZY_LOOKUP_URL, System.getProperty("cz.brmlab.yodaqa.fuzzy_lookup_url")));
