@@ -58,7 +58,6 @@ public class QuestionAnalysisEngineRu {
 
 
         if (logger.isDebugEnabled()) {
-            builder.add(AnalysisEngineFactory.createEngineDescription(DumpConstituents.class));
             builder.add(AnalysisEngineFactory.createEngineDescription(
                     CasDumpWriter.class,
                     CasDumpWriter.PARAM_OUTPUT_FILE, "/tmp/yodaqa-qacas.txt"));

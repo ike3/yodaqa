@@ -11,6 +11,12 @@ import cz.brmlab.yodaqa.flow.asb.ParallelEngineFactory;
 import cz.brmlab.yodaqa.io.interactive.InteractiveAnswerPrinter;
 import cz.brmlab.yodaqa.pipeline.YodaQA;
 
+/**
+ * Где родился Лучано Паваротти
+ * Сколько планет в Солнечной Системе
+ * Сколько стран на Земле
+ *
+ */
 public class RunRuPipelineTest {
 
     private static final String dir = System.getProperty("java.io.tmpdir");
@@ -24,7 +30,7 @@ public class RunRuPipelineTest {
         CollectionReaderDescription reader = createReaderDescription(
                 SimpleQuestion.class,
                 SimpleQuestion.PARAM_LANGUAGE, Language.RUSSIAN,
-                SimpleQuestion.PARAM_INPUT, "Где родился Лучано Паваротти?");
+                SimpleQuestion.PARAM_INPUT, "Сколько стран на Земле?");
 
         AnalysisEngineDescription printer = createEngineDescription(InteractiveAnswerPrinter.class);
 

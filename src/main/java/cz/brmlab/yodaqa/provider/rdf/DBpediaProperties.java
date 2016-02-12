@@ -75,7 +75,7 @@ public class DBpediaProperties extends DBpediaOntology {
 			 * links). */
 			String value = rawResult[1].getString().replaceAll("\\s+\\([^)]*\\)\\s*$", "");
 			String valRes = rawResult[2] != null ? rawResult[2].getString() : null;
-			String objRes = rawResult[3].getString();
+			String objRes = rawResult[3] != null ? rawResult[3].getString() : "";
 			logger.debug("DBpedia {} rawproperty: {} -> {} ({})", title, propLabel, value, valRes);
 			AnswerFV fv = new AnswerFV();
 			fv.setFeature(AF.OriginDBpProperty, 1.0);

@@ -138,7 +138,12 @@ public class LATByWordnet extends JCasAnnotator_ImplBase {
 		StringBuilder wnlist = new StringBuilder();
 
 		if (lat.getSynset() == 0) {
-			IndexWord w = dictionary.getIndexWord(wnpos, lat.getText(), lat.getLanguage());
+			IndexWord w = null;
+            try {
+                w = dictionary.getIndexWord(wnpos, lat.getText(), lat.getLanguage());
+            } catch (Exception e) {
+                logger.warn("Error getting index word for: " + lat.getText(), e);
+            }
 
 			if (w == null)
 			{
