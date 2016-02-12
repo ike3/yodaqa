@@ -98,6 +98,11 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 		for (Concept concept : JCasUtil.select(questionView, Concept.class)) {
 			properties.addAll(getConceptProperties(questionView, concept));
 		}
+		if (properties.isEmpty()) {
+		    logger.warn(String.format("No results in %s", getClass().getSimpleName()));
+		} else {
+		    logger.info(String.format("%s produces %d results", getClass().getSimpleName(), properties.size()));
+		}
 		relIter = properties.iterator();
 		i = 0;
 	}

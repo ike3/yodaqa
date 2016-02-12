@@ -137,6 +137,11 @@ public class BingFullPrimarySearch extends JCasMultiplier_ImplBase {
 			}
 		}
 
+        if (results.isEmpty()) {
+            logger.warn(String.format("No results in %s", getClass().getSimpleName()));
+        } else {
+            logger.info(String.format("%s produces %d results", getClass().getSimpleName(), results.size()));
+        }
 	}
 
 	private List<BingResult> bingSearch(Collection<Clue> clues, int hitListSize) {
