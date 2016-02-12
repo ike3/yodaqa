@@ -11,6 +11,7 @@ import cz.brmlab.yodaqa.model.Question.*;
 import cz.brmlab.yodaqa.model.TyCor.LAT;
 import de.tudarmstadt.ukp.dkpro.core.api.ner.type.NamedEntity;
 import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.dependency.Dependency;
+import de.tudarmstadt.ukp.dkpro.core.maltparser.MaltParser;
 import de.tudarmstadt.ukp.dkpro.core.tokit.BreakIteratorSegmenter;
 import de.tudarmstadt.ukp.dkpro.core.treetagger.TreeTaggerPosTagger;
 import org.apache.uima.UIMAException;
@@ -92,7 +93,7 @@ public class QuestionAnalysisEngineTest {
         builder.add(AnalysisEngineFactory.createEngineDescription(BreakIteratorSegmenter.class));
         builder.add(AnalysisEngineFactory.createEngineDescription(TreeTaggerPosTagger.class));
 //        builder.add(AnalysisEngineFactory.createEngineDescription(TreeTaggerPosToSynTagRus.class));
-        builder.add(AnalysisEngineFactory.createEngineDescription(de.tudarmstadt.ukp.dkpro.core.maltparser.MaltParser.class));
+        builder.add(AnalysisEngineFactory.createEngineDescription(MaltParser.class));
         builder.add(AnalysisEngineFactory.createEngineDescription(RootGenerator.class));
         builder.add(AnalysisEngineFactory.createEngineDescription(
                 SpotlightNameFinder.class,
@@ -100,6 +101,7 @@ public class QuestionAnalysisEngineTest {
         ));
         builder.add(AnalysisEngineFactory.createEngineDescription(FocusGeneratorRu.class));
         builder.add(AnalysisEngineFactory.createEngineDescription(SVGenerator.class));
+        builder.add(AnalysisEngineFactory.createEngineDescription(LatByNoun.class));
         builder.add(AnalysisEngineFactory.createEngineDescription(LATByFocusRu.class));
         builder.add(AnalysisEngineFactory.createEngineDescription(LATBySVRu.class));
         builder.add(AnalysisEngineFactory.createEngineDescription(LATByWordnetGeneral.class,
@@ -107,6 +109,7 @@ public class QuestionAnalysisEngineTest {
         builder.add(AnalysisEngineFactory.createEngineDescription(ClueBySV.class));
         builder.add(AnalysisEngineFactory.createEngineDescription(ClueByNE.class));
         builder.add(AnalysisEngineFactory.createEngineDescription(ClueByLAT.class));
+        builder.add(AnalysisEngineFactory.createEngineDescription(ClueByNoun.class));
         builder.add(AnalysisEngineFactory.createEngineDescription(CluesToConcepts.class,
                 CluesToConcepts.PARAM_LANGUAGE, Language.RUSSIAN,
                 CluesToConcepts.PARAM_FUZZY_LOOKUP_URL, "http://localhost:5000"));
