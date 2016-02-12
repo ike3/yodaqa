@@ -82,7 +82,8 @@ public class PassageAnalysisAE /* XXX: extends AggregateBuilder ? */ {
 		/* Our passages are already split to sentences
 		 * and tokenized. */
 
-		builder.add(createPrimitiveDescription(MultiLanguageParserExt.class));
+		builder.add(createPrimitiveDescription(MultiLanguageParserExt.class),
+		        CAS.NAME_DEFAULT_SOFA, "PickedPassages");
 
 		builder.add(createPrimitiveDescription(PipelineLogger.class,
 					PipelineLogger.PARAM_LOG_MESSAGE, "QA analysis"));
