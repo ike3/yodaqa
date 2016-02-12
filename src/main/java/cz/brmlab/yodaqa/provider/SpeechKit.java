@@ -5,12 +5,16 @@ import java.net.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateUtils;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.slf4j.*;
 
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
+
+import cz.brmlab.yodaqa.provider.SpeechKit.SpeechKitResponse;
+import cz.brmlab.yodaqa.provider.SpeechKit.SpeechKitResponse.Tokens;
 
 public class SpeechKit {
     final Logger logger = LoggerFactory.getLogger(SpeechKit.class);
@@ -25,6 +29,24 @@ public class SpeechKit {
 
             public int getEnd() {
                 return End;
+            }
+
+        }
+
+        public static class CharTokens {
+            int BeginChar, EndChar;
+            String Text;
+
+            public String getText() {
+                return Text;
+            }
+
+            public int getBeginChar() {
+                return BeginChar;
+            }
+
+            public int getEndChar() {
+                return EndChar;
             }
 
         }
@@ -84,6 +106,7 @@ public class SpeechKit {
         public static class Fio {
             String FirstName;
             String LastName;
+            String Patronymic;
             Tokens Tokens;
 
             public String getFirstName() {
@@ -94,13 +117,27 @@ public class SpeechKit {
                 return LastName;
             }
 
+            public String getPatronymic() {
+                return Patronymic;
+            }
+
             public Tokens getTokens() {
                 return Tokens;
             }
 
             @Override
             public String toString() {
-                return FirstName + " " + LastName;
+                if (StringUtils.isEmpty(Patronymic)) {
+                    return FirstName + " " + LastName;
+                }
+                return String.format("%s %s %s", FirstName, Patronymic, LastName);
+            }
+
+            public String toCanonicString() {
+                if (StringUtils.isEmpty(Patronymic)) {
+                    return String.format("%s, %s", LastName, FirstName);
+                }
+                return String.format("%s, %s %s", LastName, FirstName, Patronymic);
             }
 
         }
@@ -119,6 +156,12 @@ public class SpeechKit {
             return Fio;
         }
 
+
+        CharTokens[] Tokens = new CharTokens[0];
+
+        public CharTokens[] getTokens() {
+            return Tokens;
+        }
 
     }
 
@@ -139,6 +182,17 @@ public class SpeechKit {
             throw new AnalysisEngineProcessException(e);
         }
 
+    }
+
+    public static int getEnd(Tokens tokens, SpeechKitResponse result) {
+        if (tokens.getEnd() >= result.Tokens.length) {
+            return result.Tokens[result.Tokens.length - 1].getEndChar();
+        }
+        return result.Tokens[tokens.getEnd() - 1].getEndChar();
+    }
+
+    public static int getBegin(Tokens tokens, SpeechKitResponse result) {
+        return result.Tokens[tokens.getBegin()].getBeginChar();
     }
 
 

@@ -2,11 +2,14 @@ package cz.brmlab.yodaqa.question.analysis;
 
 import cz.brmlab.yodaqa.*;
 import cz.brmlab.yodaqa.flow.MultiCASPipeline;
+import cz.brmlab.yodaqa.pipeline.YodaQA;
 import cz.brmlab.yodaqa.provider.SyncOpenNlpNameFinder;
 import de.tudarmstadt.ukp.dkpro.core.api.ner.type.NamedEntity;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Lemma;
 import de.tudarmstadt.ukp.dkpro.core.tokit.BreakIteratorSegmenter;
 import de.tudarmstadt.ukp.dkpro.core.treetagger.TreeTaggerPosTagger;
+import ru.yandex.speechkit.SpeechKitNamedEntityFinder;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.collection.CollectionReaderDescription;
@@ -95,5 +98,16 @@ public class NamedEntityFinderTest extends MultiCASPipelineTest {
         EXPECTED_CLASS = NamedEntity.class;
         EXPECTED_OUTPUT = "Гарри Поттера";
         runPipeline(Tested.class, "Гарри Поттера", builder, TestConsumer.class);
+    }
+
+    @Test
+    public void speechKitNameFinderRu() throws Exception {
+        new YodaQA();
+        AggregateBuilder builder = new AggregateBuilder();
+        builder.add(createPrimitiveDescription(SpeechKitNamedEntityFinder.class));
+
+        EXPECTED_CLASS = NamedEntity.class;
+        EXPECTED_OUTPUT = "Владимир Владимирович Путин";
+        runPipeline(Tested.class, "Владимир Владимирович Путин является действующим президентом России", builder, TestConsumer.class);
     }
 }

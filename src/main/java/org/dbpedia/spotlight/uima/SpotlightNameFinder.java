@@ -201,7 +201,7 @@ public class SpotlightNameFinder extends JCasAnnotator_ImplBase {
     }
 
     private String queryDbp(JCas aJCas, String label) {
-        List<String> types = dbt.query(label, LOG, aJCas.getDocumentLanguage());
+        List<String> types = dbt.query(label, LOG);
         List<String> mappedTypes = new ArrayList<>(types);
         for (String type : types) {
             String[] words = type.split("\\s+");

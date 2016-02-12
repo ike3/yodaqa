@@ -36,16 +36,16 @@ public class LATBySpeechKit extends JCasAnnotator_ImplBase {
         SpeechKitResponse result = speechKit.query(jcas.getDocumentText());
 		for (Date date : result.getDate()) {
 		    String label = date.toString();
-            addLAT(jcas, new SpKitDateLAT(jcas), date.getTokens().getBegin(), date.getTokens().getEnd(), label, MultiLanguageParser.getLanguage(label));
+            addLAT(jcas, new SpKitDateLAT(jcas), SpeechKit.getBegin(date.getTokens(), result), SpeechKit.getEnd(date.getTokens(), result), label, MultiLanguageParser.getLanguage(label));
 		}
 		for (Fio fio : result.getFio()) {
             String label = fio.toString();
-            addLAT(jcas, new SpKitFioLAT(jcas), fio.getTokens().getBegin(), fio.getTokens().getEnd(), label, MultiLanguageParser.getLanguage(label));
+            addLAT(jcas, new SpKitFioLAT(jcas), SpeechKit.getBegin(fio.getTokens(), result), SpeechKit.getEnd(fio.getTokens(), result), label, MultiLanguageParser.getLanguage(label));
 		}
 		for (GeoAddr addr : result.getGeoAddr()) {
 		    for (Fields fields : addr.getFields()) {
                 String label = fields.getName();
-                addLAT(jcas, new SpKitGeoAddrLAT(jcas), addr.getTokens().getBegin(), addr.getTokens().getEnd(), label, MultiLanguageParser.getLanguage(label));
+                addLAT(jcas, new SpKitGeoAddrLAT(jcas), SpeechKit.getBegin(addr.getTokens(), result), SpeechKit.getEnd(addr.getTokens(), result), label, MultiLanguageParser.getLanguage(label));
 		    }
 		}
 	}

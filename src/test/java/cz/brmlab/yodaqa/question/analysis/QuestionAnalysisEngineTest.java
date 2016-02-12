@@ -23,7 +23,7 @@ import org.apache.uima.fit.factory.CollectionReaderFactory;
 import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
 import org.dbpedia.spotlight.uima.SpotlightNameFinder;
-import org.junit.Test;
+import org.junit.*;
 
 import java.io.IOException;
 import java.util.Iterator;
@@ -86,6 +86,7 @@ public class QuestionAnalysisEngineTest {
     }
 
     @Test
+    @Ignore
     public void testRuQuestionAnalysisAnnotators() throws UIMAException, IOException {
         AggregateBuilder builder = new AggregateBuilder();
         builder.add(AnalysisEngineFactory.createEngineDescription(BreakIteratorSegmenter.class));
