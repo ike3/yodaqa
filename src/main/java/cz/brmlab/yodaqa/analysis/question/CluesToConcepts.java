@@ -89,8 +89,17 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 			 * a corresponding enwiki article.  This internally
 			 * involves also some fuzzy lookups and such. */
 			List<DBpediaTitles.Article> results = dbp.query(clueLabel, LANGUAGE, FUZZY_LOOKUP_URL, logger);
-			if (results.size() == 0)
+			if (results.size() == 0) {
 				continue; // no linkage
+			} else if(results.size() > 1 && LANGUAGE.equals(Language.RUSSIAN)) {
+				Iterator<DBpediaTitles.Article> iter = results.iterator();
+				while(iter.hasNext()) {
+					DBpediaTitles.Article article = iter.next();
+					if(article.getProb() < 0.1) {
+						iter.remove();
+					}
+				}
+			}
 
 			LinkedClue lc = new LinkedClue(clue, results);
 			linkedClues.put(clue, lc);
