@@ -128,5 +128,22 @@
         <description>LAT generated from other LATs by Wordnet hypernymy relationships.</description>
         <supertypeName>cz.brmlab.yodaqa.model.TyCor.LAT</supertypeName>
       </typeDescription>
+
+      <typeDescription>
+        <name>cz.brmlab.yodaqa.model.TyCor.SpKitDateLAT</name>
+        <description>LAT generated from SpeechKit dates</description>
+        <supertypeName>cz.brmlab.yodaqa.model.TyCor.LAT</supertypeName>
+      </typeDescription>
+      <typeDescription>
+        <name>cz.brmlab.yodaqa.model.TyCor.SpKitGeoAddrLAT</name>
+        <description>LAT generated from SpeechKit geo address</description>
+        <supertypeName>cz.brmlab.yodaqa.model.TyCor.LAT</supertypeName>
+      </typeDescription>
+      <typeDescription>
+        <name>cz.brmlab.yodaqa.model.TyCor.SpKitFioLAT</name>
+        <description>LAT generated from SpeechKit fio</description>
+        <supertypeName>cz.brmlab.yodaqa.model.TyCor.LAT</supertypeName>
+      </typeDescription>
+
     </types>
   </typeSystemDescription>

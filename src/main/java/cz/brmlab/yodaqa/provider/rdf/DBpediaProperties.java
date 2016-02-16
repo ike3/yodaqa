@@ -6,6 +6,7 @@ import java.util.List;
 import com.hp.hpl.jena.rdf.model.Literal;
 
 import cz.brmlab.yodaqa.flow.dashboard.AnswerSourceStructured;
+import cz.brmlab.yodaqa.analysis.MultiLanguageParser;
 import cz.brmlab.yodaqa.analysis.ansscore.AF;
 import cz.brmlab.yodaqa.analysis.ansscore.AnswerFV;
 
@@ -31,6 +32,7 @@ public class DBpediaProperties extends DBpediaOntology {
 		 * by capitalizing words that are not stopwords  */
 		title = super.capitalizeTitle(title);
 
+		String language = MultiLanguageParser.getLanguage(title);
 		String quotedTitle = title.replaceAll("\"", "").replaceAll("\\\\", "").replaceAll("\n", " ");
 		/* If you want to paste this to e.g.
 		 * 	http://dbpedia.org/snorql/
@@ -40,11 +42,11 @@ public class DBpediaProperties extends DBpediaOntology {
 		String rawQueryStr =
 			"{\n" +
 			   // (A) fetch resources with @title label
-			"  ?res rdfs:label \"" + quotedTitle + "\"@en.\n" +
+			"  ?res rdfs:label \"" + quotedTitle + "\"@" + language + ".\n" +
 			"} UNION {\n" +
 			   // (B) fetch also resources targetted by @title redirect
 			"  ?redir dbo:wikiPageRedirects ?res .\n" +
-			"  ?redir rdfs:label \"" + quotedTitle + "\"@en .\n" +
+			"  ?redir rdfs:label \"" + quotedTitle + "\"@" + language + " .\n" +
 			"}\n" +
 			 // set the output variables
 			"?res ?property ?valres .\n" +
@@ -73,7 +75,7 @@ public class DBpediaProperties extends DBpediaOntology {
 			 * links). */
 			String value = rawResult[1].getString().replaceAll("\\s+\\([^)]*\\)\\s*$", "");
 			String valRes = rawResult[2] != null ? rawResult[2].getString() : null;
-			String objRes = rawResult[3].getString();
+			String objRes = rawResult[3] != null ? rawResult[3].getString() : "";
 			logger.debug("DBpedia {} rawproperty: {} -> {} ({})", title, propLabel, value, valRes);
 			AnswerFV fv = new AnswerFV();
 			fv.setFeature(AF.OriginDBpProperty, 1.0);

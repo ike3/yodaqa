@@ -9,6 +9,8 @@ import java.util.Set;
 
 import com.hp.hpl.jena.rdf.model.Literal;
 
+import cz.brmlab.yodaqa.analysis.MultiLanguageParser;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.slf4j.Logger;
@@ -24,9 +26,9 @@ public class DBpediaTypes extends DBpediaLookup {
 		LogFactory.getLog(DBpediaTypes.class);
 
 	/** Query for a given title, returning a set of types. */
-	public List<String> query(String title, Logger logger, String language) {
+	public List<String> query(String title, Logger logger) {
 		for (String titleForm : cookedTitles(title)) {
-			List<String> results = queryTitleForm(titleForm, logger, language);
+			List<String> results = queryTitleForm(titleForm, logger);
 			if (!results.isEmpty())
 				return results;
 		}
@@ -35,11 +37,12 @@ public class DBpediaTypes extends DBpediaLookup {
 
 	/** Query for a given specific title form, returning a set
 	 * of types. */
-	public List<String> queryTitleForm(String title, Logger logger, String language) {
+	public List<String> queryTitleForm(String title, Logger logger) {
 		/* XXX: Case-insensitive search via SPARQL turns out
 		 * to be surprisingly tricky.  Cover 91% of all cases
 		 * by capitalizing words that are not stopwords  */
 		title = super.capitalizeTitle(title);
+		String language = MultiLanguageParser.getLanguage(title);
 
 		title = title.replaceAll("\"", "").replaceAll("\\\\", "").replaceAll("\n", " ");
 		String rawQueryStr =

@@ -55,7 +55,8 @@ public class PassageExtractorAE /* XXX: extends AggregateBuilder ? */ {
 		// with incomplete sentences e.g. separated by paragraphs etc.
 		// However, StanfordSegmenter handles numerical quantities
 		// (like 10,900) much better.
-		builder.add(createPrimitiveDescription(MultiLanguageParserExt.class));
+		builder.add(createPrimitiveDescription(MultiLanguageParserExt.class),
+		        CAS.NAME_DEFAULT_SOFA, "Result");
 
 		/* At this point, we can filter the source to keep
 		 * only sentences and tokens we care about: */

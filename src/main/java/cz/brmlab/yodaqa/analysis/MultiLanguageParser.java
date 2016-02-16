@@ -36,7 +36,9 @@ public abstract class MultiLanguageParser extends JCasAnnotator_ImplBase {
 	    if (analysisEngine != null) {
 	        analysisEngine.process(jcas);
 	    } else {
-	        logger.error("MultiLanguageParser has no engine for language " + jcas.getDocumentLanguage());
+	        logger.error(String.format("MultiLanguageParser has no engine for language %s. CAS text = %s",
+	                jcas.getDocumentLanguage(),
+	                jcas.getDocumentText()));
 	    }
 	}
 

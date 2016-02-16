@@ -82,7 +82,8 @@ public class PassageAnalysisAE /* XXX: extends AggregateBuilder ? */ {
 		/* Our passages are already split to sentences
 		 * and tokenized. */
 
-		builder.add(createPrimitiveDescription(MultiLanguageParserExt.class));
+		builder.add(createPrimitiveDescription(MultiLanguageParserExt.class),
+		        CAS.NAME_DEFAULT_SOFA, "PickedPassages");
 
 		builder.add(createPrimitiveDescription(PipelineLogger.class,
 					PipelineLogger.PARAM_LOG_MESSAGE, "QA analysis"));
@@ -102,6 +103,7 @@ public class PassageAnalysisAE /* XXX: extends AggregateBuilder ? */ {
 		/* CandidateAnswer from each named entity that does not match
 		 * any of the clues. */
 		builder.add(createPrimitiveDescription(CanByNESurprise.class));
+		builder.add(createPrimitiveDescription(CanBySpeechKitSurprise.class));
 		/* Passages like: The <question focus> is <CandidateAnswer>. */
 		builder.add(createPrimitiveDescription(CanByLATSubject.class));
 		/* CandidateAnswer based on token sequence tagging with B-I-O

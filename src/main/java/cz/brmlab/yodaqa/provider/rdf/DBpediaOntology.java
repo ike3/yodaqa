@@ -6,6 +6,7 @@ import java.util.List;
 import com.hp.hpl.jena.rdf.model.Literal;
 
 import cz.brmlab.yodaqa.flow.dashboard.AnswerSourceStructured;
+import cz.brmlab.yodaqa.analysis.MultiLanguageParser;
 import cz.brmlab.yodaqa.analysis.ansscore.AF;
 import cz.brmlab.yodaqa.analysis.ansscore.AnswerFV;
 
@@ -40,6 +41,7 @@ public class DBpediaOntology extends DBpediaLookup {
 		 * to be surprisingly tricky.  Cover 91% of all cases
 		 * by capitalizing words that are not stopwords  */
 		title = super.capitalizeTitle(title);
+		String language = MultiLanguageParser.getLanguage(title);
 
 		String quotedTitle = title.replaceAll("\"", "").replaceAll("\\\\", "").replaceAll("\n", " ");
 		/* If you want to paste this to e.g.
@@ -50,11 +52,11 @@ public class DBpediaOntology extends DBpediaLookup {
 		String rawQueryStr =
 			"{\n" +
 			   // (A) fetch resources with @title label
-			"  ?res rdfs:label \"" + quotedTitle + "\"@en.\n" +
+			"  ?res rdfs:label \"" + quotedTitle + "\"@" + language + ".\n" +
 			"} UNION {\n" +
 			   // (B) fetch also resources targetted by @title redirect
 			"  ?redir dbo:wikiPageRedirects ?res .\n" +
-			"  ?redir rdfs:label \"" + quotedTitle + "\"@en .\n" +
+			"  ?redir rdfs:label \"" + quotedTitle + "\"@" + language + " .\n" +
 			"}\n" +
 			 // set the output variables
 			"?res ?property ?valres .\n" +

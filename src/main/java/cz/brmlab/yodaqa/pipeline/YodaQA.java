@@ -73,6 +73,9 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 		System.setProperty("dkpro.core.resourceprovider.sharable." + StanfordPosTagger.class.getName(), "true");
 		System.setProperty("dkpro.core.resourceprovider.sharable." + OpenNlpNameFinder.class.getName(), "true");
 		System.setProperty("cz.brmlab.yodaqa.spotlight_name_finder_endpoint", "http://spotlight.sztaki.hu:2227/rest/annotate");
+		System.setProperty("cz.brmlab.yodaqa.speech_kit_endpoint", "https://vins-markup.voicetech.yandex.net/markup/0.x/");
+		System.setProperty("cz.brmlab.yodaqa.speech_kit_key", "5ddb8271-93c8-418c-94de-0b732da81599");
+        System.setProperty("cz.brmlab.yodaqa.fuzzy_lookup_url", "http://localhost:5000");
 	}
 
 	public static AnalysisEngineDescription createEngineDescription() throws ResourceInitializationException {

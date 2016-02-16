@@ -120,10 +120,10 @@ public class FullStackTest extends MultiCASPipelineTest {
                 DumpCAS2File.PARAM_SAVE_DIR, dir,
                 DumpCAS2File.PARAM_SUFFIX, "FullStack"));
 
-        RESULT = "В сочельник вилку следует держать правой рукой. Это улучшает восприятие праздника.";
+        RESULT = "В сочельник вилку следует держать правой рукой. Это улучшает восприятие праздника 8 марта.";
         QUESTION = "игнор";
         CLUE_NE = "сочельник";
-        CLUE_LAT = "рука";
+        CLUE_LAT = "8 марта";
         runPipeline(Tested.class, "это игнорируется", builder, TestConsumer.class);
     }
 }

@@ -1,29 +1,28 @@
 package cz.brmlab.yodaqa.answer.analysis;
 
 import static org.apache.uima.fit.factory.AnalysisEngineFactory.createPrimitiveDescription;
+import static org.apache.uima.fit.factory.CollectionReaderFactory.createReaderDescription;
 
 import java.util.*;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
+import org.apache.uima.collection.CollectionReaderDescription;
 import org.apache.uima.fit.component.JCasConsumer_ImplBase;
-import org.apache.uima.fit.factory.*;
+import org.apache.uima.fit.factory.AggregateBuilder;
 import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
 import org.junit.*;
 
 import cz.brmlab.yodaqa.*;
 import cz.brmlab.yodaqa.analysis.ansscore.AnswerFV;
-import cz.brmlab.yodaqa.analysis.tycor.LATNormalize;
+import cz.brmlab.yodaqa.analysis.answer.*;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerInfo;
-import cz.brmlab.yodaqa.model.TyCor.LAT;
-import de.tudarmstadt.ukp.dkpro.core.tokit.BreakIteratorSegmenter;
+import cz.brmlab.yodaqa.model.TyCor.*;
+import cz.brmlab.yodaqa.pipeline.YodaQA;
 
-/*
- */
-public class LATNormalizeTest extends MultiCASPipelineTest {
+public class LATBySpeechKitTest extends MultiCASPipelineTest {
     private static String EXPECTED_OUTPUT;
-    private static String INPUT;
 
     public static class Tested extends SimpleQuestion {
 
@@ -37,9 +36,6 @@ public class LATNormalizeTest extends MultiCASPipelineTest {
                 AnswerFV fv = new AnswerFV(ai);
                 ai.setFeatures(fv.toFSArray(jcas));
 
-                LAT lat = new LAT(jcas);
-                lat.setText(INPUT);
-                lat.addToIndexes(jcas);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -61,33 +57,26 @@ public class LATNormalizeTest extends MultiCASPipelineTest {
         }
     }
 
-    @Test
-    public void runRU() throws Exception {
-        AggregateBuilder builder = new AggregateBuilder();
-        builder.add(createPrimitiveDescription(LATNormalize.class));
-
-        INPUT = "большие земли";
-        EXPECTED_OUTPUT = "большие земля,земля";
-        runPipeline(Tested.class, "это игнорируется", builder, TestConsumer.class);
-    }
-
+    /**
+     * Для англ не работает, но нам главное чтобы не падало
+     */
     @Test
     public void runEN() throws Exception {
+        new YodaQA();
         AggregateBuilder builder = new AggregateBuilder();
-        builder.add(createPrimitiveDescription(LATNormalize.class));
+        builder.add(createPrimitiveDescription(LATBySpeechKit.class));
 
-        INPUT = "several suns";
-        EXPECTED_OUTPUT = "several sun,sun";
-        runPipeline(Tested.class, "ignore", builder, TestConsumer.class);
+        EXPECTED_OUTPUT = "";
+        runPipeline(Tested.class, "who wrote Harry Potter at Lenina str in New York?", builder, TestConsumer.class);
     }
 
     @Test
-    public void runDate() throws Exception {
+    public void runRU() throws Exception {
+        new YodaQA();
         AggregateBuilder builder = new AggregateBuilder();
-        builder.add(createPrimitiveDescription(LATNormalize.class));
+        builder.add(createPrimitiveDescription(LATBySpeechKit.class));
 
-        INPUT = "23 Feb 2015";
-        EXPECTED_OUTPUT = "23 Feb 2015,Feb";
-        runPipeline(Tested.class, "ignore", builder, TestConsumer.class);
+        EXPECTED_OUTPUT = "15 Feb 2015,25 Jan 0000,гарри поттер,новосибирск,проспект ленина";
+        runPipeline(Tested.class, "кто написал Гарри Поттера 25 января и 15 февраля 2015 на проспекте Ленина в Новосибирске", builder, TestConsumer.class);
     }
 }

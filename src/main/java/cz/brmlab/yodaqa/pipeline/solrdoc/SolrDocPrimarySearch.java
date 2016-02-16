@@ -113,6 +113,11 @@ public class SolrDocPrimarySearch extends JCasMultiplier_ImplBase {
 		} catch (Exception e) {
 			throw new AnalysisEngineProcessException(e);
 		}
+        if (documents.isEmpty()) {
+            logger.warn(String.format("No results in %s", getClass().getSimpleName()));
+        } else {
+            logger.info(String.format("%s produces %d results", getClass().getSimpleName(), documents.size()));
+        }
 		docIter = documents.iterator();
 		i = 0;
 	}

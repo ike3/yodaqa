@@ -155,7 +155,7 @@ public class FullStackTest extends MultiCASPipelineTest {
                 DumpCAS2File.PARAM_SUFFIX, "FullStack"));
 
         QUESTION = "не имеет значения";
-        ANSWER = "Вилку следует держать правой рукой";
+        ANSWER = "23 февраля вилку следует держать правой рукой";
         runPipeline(Tested.class, "игнор", builder, TestConsumer.class);
     }
 }

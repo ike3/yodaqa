@@ -198,6 +198,11 @@ public class SolrFullPrimarySearch extends JCasMultiplier_ImplBase {
 			/* Record the result. */
 			results.add(new SolrResult(doc, null, i+1));
 		}
+        if (results.isEmpty()) {
+            logger.warn(String.format("No results in %s", getClass().getSimpleName()));
+        } else {
+            logger.info(String.format("%s produces %d results", getClass().getSimpleName(), results.size()));
+        }
 	}
 
 	@Override

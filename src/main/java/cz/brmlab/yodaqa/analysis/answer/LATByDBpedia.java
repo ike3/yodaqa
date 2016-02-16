@@ -95,7 +95,7 @@ public class LATByDBpedia extends JCasAnnotator_ImplBase {
 	protected boolean addLATByLabel(JCas jcas, Focus focus, String label) throws AnalysisEngineProcessException {
 		StringBuilder typelist = new StringBuilder();
 
-		List<String> types = dbt.query(label, logger, jcas.getDocumentLanguage());
+		List<String> types = dbt.query(label, logger);
 		for (String type : types) {
 			if (type.toLowerCase().equals("function word")) {
 				/* Ignore function words: she, them, ... */
