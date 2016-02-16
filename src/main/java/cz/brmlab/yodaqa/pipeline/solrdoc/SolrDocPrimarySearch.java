@@ -12,11 +12,13 @@ import cz.brmlab.yodaqa.flow.dashboard.QuestionDashboard;
 import cz.brmlab.yodaqa.flow.dashboard.SourceIDGenerator;
 import cz.brmlab.yodaqa.flow.dashboard.snippet.AnsweringDocTitle;
 import cz.brmlab.yodaqa.flow.dashboard.snippet.SnippetIDGenerator;
+import cz.brmlab.yodaqa.model.Question.ClueNE;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.AbstractCas;
+import org.apache.uima.cas.CASException;
 import org.apache.uima.fit.component.JCasMultiplier_ImplBase;
 import org.apache.uima.fit.descriptor.ConfigurationParameter;
 import org.apache.uima.fit.util.FSCollectionFactory;
@@ -96,7 +98,12 @@ public class SolrDocPrimarySearch extends JCasMultiplier_ImplBase {
 
 	@Override
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
-		questionView = jcas;
+		//TODO check this place
+		try {
+			questionView = jcas.getView("Question");
+		} catch (CASException e) {
+			questionView = jcas;
+		}
 
 		SolrDocumentList documents;
 		try {
