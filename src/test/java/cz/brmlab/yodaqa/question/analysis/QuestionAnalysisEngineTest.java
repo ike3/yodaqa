@@ -106,6 +106,7 @@ public class QuestionAnalysisEngineTest {
         builder.add(AnalysisEngineFactory.createEngineDescription(LATBySVRu.class));
         builder.add(AnalysisEngineFactory.createEngineDescription(LATByWordnetGeneral.class,
                 LATByWordnet.PARAM_EXPAND_SYNSET_LATS, false));
+        builder.add(AnalysisEngineFactory.createEngineDescription(ClueByQuestionWord.class));
         builder.add(AnalysisEngineFactory.createEngineDescription(ClueBySV.class));
         builder.add(AnalysisEngineFactory.createEngineDescription(ClueByNE.class));
         builder.add(AnalysisEngineFactory.createEngineDescription(ClueByLAT.class));
