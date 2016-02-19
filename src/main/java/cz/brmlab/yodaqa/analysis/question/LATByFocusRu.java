@@ -1,5 +1,6 @@
 package cz.brmlab.yodaqa.analysis.question;
 
+import cz.brmlab.yodaqa.Language;
 import cz.brmlab.yodaqa.analysis.TreeUtil;
 import cz.brmlab.yodaqa.analysis.answer.SyntaxCanonization;
 import cz.brmlab.yodaqa.model.Question.Focus;
@@ -10,6 +11,7 @@ import de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.POS;
 import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.constituent.NP;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
+import static cz.brmlab.yodaqa.analysis.QuestionWord.*;
 
 public class LATByFocusRu extends LATByFocus {
 
@@ -23,23 +25,26 @@ public class LATByFocusRu extends LATByFocus {
 		/* N.B. since these LATs are generated with a precise synset,
 		 * they are not generalized and therefore any answer matches
 		 * will need to be qhits. */
+
+        QuestionWordLAT questionWordLAT = new QuestionWordLAT(jcas);
+        questionWordLAT.setLanguage(Language.RUSSIAN);
         if (text.equals("кто") || text.equals("кому")) {
 			/* (6833){00007846} <noun.Tops>[03] S: (n) person#1 (person%1:03:00::), individual#1 (individual%1:03:00::), someone#1 (someone%1:03:00::), somebody#1 (somebody%1:03:00::), mortal#1 (mortal%1:03:00::), soul#2 (soul%1:03:00::) (a human being) "there was too much for oneperson to do" */
-            addFocusLAT(jcas, focus, "person", null, 7846, 0.0, new QuestionWordLAT(jcas));
+            addFocusLAT(jcas, focus, PERSON.getEngText(), null, 7846, 0.0, questionWordLAT);
 
         } else if (text.equals("когда")) {
 			/* (114){15147173} <noun.time>[28] S: (n) time#3 (time%1:28:00::) (an indefinite period (usually marked by specific attributes or activities)) "the time of year for planting"; "he was a great actor in his time" */
-            addFocusLAT(jcas, focus, "time", null, 15147173, 0.0, new QuestionWordLAT(jcas));
+            addFocusLAT(jcas, focus, TIME.getEngText(), null, 15147173, 0.0, questionWordLAT);
 			/* (23){15184543} <noun.time>[28] S: (n) date#1 (date%1:28:00::), day of the month#1 (day_of_the_month%1:28:00::) (the specified day of the month) "what is the date today?" */
-            addFocusLAT(jcas, focus, "date", null, 15184543, 0.0, new QuestionWordLAT(jcas));
+            addFocusLAT(jcas, focus, DATE.getEngText(), null, 15184543, 0.0, questionWordLAT);
 
         } else if (text.equals("где")) {
 			/* (992){00027365} <noun.Tops>[03] S: (n) location#1 (location%1:03:00::) (a point or extent in space) */
-            addFocusLAT(jcas, focus, "location", null, 27365, 0.0, new QuestionWordLAT(jcas));
+            addFocusLAT(jcas, focus, LOCATION.getEngText(), null, 27365, 0.0, questionWordLAT);
 
         } else if (text.equals("сколько") || text.equals("как много")) {
 			/* (15){00033914} <noun.Tops>[03] S: (n) measure#2 (measure%1:03:00::), quantity#1 (quantity%1:03:00::), amount#3 (amount%1:03:00::) (how much there is or how many there are of something that you can quantify) */
-            addFocusLAT(jcas, focus, "amount", null, 33914, 0.0, new QuestionWordLAT(jcas));
+            addFocusLAT(jcas, focus, AMOUNT.getEngText(), null, 33914, 0.0, questionWordLAT);
 
         } else if (isAmbiguousQLemma(text)) {
             logger.info("?! Skipping focus LAT for ambiguous qlemma {}", text);

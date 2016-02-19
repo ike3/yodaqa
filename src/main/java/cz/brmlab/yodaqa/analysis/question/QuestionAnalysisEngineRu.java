@@ -43,6 +43,7 @@ public class QuestionAnalysisEngineRu {
         builder.add(AnalysisEngineFactory.createEngineDescription(LatByNoun.class));
         builder.add(AnalysisEngineFactory.createEngineDescription(LATByWordnetGeneral.class,
                 LATByWordnet.PARAM_EXPAND_SYNSET_LATS, false));
+        builder.add(AnalysisEngineFactory.createEngineDescription(ClueByQuestionWord.class));
         builder.add(AnalysisEngineFactory.createEngineDescription(ClueBySV.class));
         builder.add(AnalysisEngineFactory.createEngineDescription(ClueByNE.class));
         builder.add(AnalysisEngineFactory.createEngineDescription(ClueByLAT.class));
