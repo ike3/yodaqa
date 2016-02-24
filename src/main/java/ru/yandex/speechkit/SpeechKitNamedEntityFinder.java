@@ -31,6 +31,11 @@ public class SpeechKitNamedEntityFinder extends JCasAnnotator_ImplBase {
 	}
 
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
+        if (!speechKit.isEnabled()) {
+            logger.warn("Speech kit is disabled. Please provide its developer key.");
+            return;
+        }
+
 	    SpeechKitResponse result = speechKit.query(jcas.getDocumentText());
         for (Fio fio : result.getFio()) {
             String label = fio.toCanonicString();

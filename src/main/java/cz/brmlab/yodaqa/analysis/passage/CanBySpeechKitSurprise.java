@@ -41,6 +41,11 @@ public class CanBySpeechKitSurprise extends CandidateGenerator {
 	}
 
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
+        if (!speechKit.isEnabled()) {
+            logger.warn("Speech kit is disabled. Please provide its developer key.");
+            return;
+        }
+
 		JCas questionView, resultView, passagesView;
 		try {
 			questionView = jcas.getView("Question");

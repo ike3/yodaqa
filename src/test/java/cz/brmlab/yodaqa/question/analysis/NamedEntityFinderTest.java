@@ -2,7 +2,7 @@ package cz.brmlab.yodaqa.question.analysis;
 
 import cz.brmlab.yodaqa.*;
 import cz.brmlab.yodaqa.flow.MultiCASPipeline;
-import cz.brmlab.yodaqa.pipeline.YodaQA;
+import cz.brmlab.yodaqa.pipeline.*;
 import cz.brmlab.yodaqa.provider.SyncOpenNlpNameFinder;
 import de.tudarmstadt.ukp.dkpro.core.api.ner.type.NamedEntity;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Lemma;

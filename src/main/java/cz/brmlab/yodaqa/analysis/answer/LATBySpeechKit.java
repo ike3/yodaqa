@@ -29,6 +29,10 @@ public class LATBySpeechKit extends JCasAnnotator_ImplBase {
 	}
 
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
+	    if (!speechKit.isEnabled()) {
+            logger.warn("Speech kit is disabled. Please provide its developer key.");
+	        return;
+	    }
 		/* Skip an empty answer. */
 		if (jcas.getDocumentText().matches("^\\s*$"))
 			return;

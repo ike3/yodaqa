@@ -17,6 +17,9 @@ import cz.brmlab.yodaqa.provider.SpeechKit.SpeechKitResponse;
 import cz.brmlab.yodaqa.provider.SpeechKit.SpeechKitResponse.Tokens;
 
 public class SpeechKit {
+    private static final String SPEECH_KIT_KEY = "cz.brmlab.yodaqa.speech_kit_key";
+    private static final String SPEECH_KIT_ENDPOINT = "cz.brmlab.yodaqa.speech_kit_endpoint";
+
     final Logger logger = LoggerFactory.getLogger(SpeechKit.class);
 
     public static class SpeechKitResponse implements Serializable {
@@ -169,9 +172,9 @@ public class SpeechKit {
         try {
             String encodedText = URLEncoder.encode(documentText, "UTF-8").replace("+", "%20");
             String requestURL = String.format("%s?text=%s&key=%s",
-                    System.getProperty("cz.brmlab.yodaqa.speech_kit_endpoint"),
+                    System.getProperty(SPEECH_KIT_ENDPOINT),
                     encodedText,
-                    System.getProperty("cz.brmlab.yodaqa.speech_kit_key"));
+                    System.getProperty(SPEECH_KIT_KEY));
             logger.debug("{}: Sending request to {}", documentText, requestURL);
             URL request = new URL(requestURL);
             URLConnection connection = request.openConnection();
@@ -195,5 +198,8 @@ public class SpeechKit {
         return result.Tokens[tokens.getBegin()].getBeginChar();
     }
 
+    public boolean isEnabled() {
+        return !StringUtils.isEmpty(System.getProperty(SPEECH_KIT_KEY));
+    }
 
 }

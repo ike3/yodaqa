@@ -34,7 +34,8 @@ public class QuestionAnalysisEngineRu {
         //NameFinder
         builder.add(AnalysisEngineFactory.createEngineDescription(
                 SpotlightNameFinder.class,
-                SpotlightNameFinder.PARAM_ENDPOINT, System.getProperty("cz.brmlab.yodaqa.spotlight_name_finder_endpoint")
+                SpotlightNameFinder.PARAM_ENDPOINT, System.getProperty("cz.brmlab.yodaqa.spotlight_name_finder_endpoint"),
+                SpotlightNameFinder.PARAM_ENABLED, System.getProperty("cz.brmlab.yodaqa.spotlight_name_finder_enabled")
         ));
         builder.add(AnalysisEngineFactory.createEngineDescription(FocusGeneratorRu.class));
         builder.add(AnalysisEngineFactory.createEngineDescription(SVGenerator.class));

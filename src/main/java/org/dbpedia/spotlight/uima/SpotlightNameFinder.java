@@ -54,6 +54,10 @@ public class SpotlightNameFinder extends JCasAnnotator_ImplBase {
 	@ConfigurationParameter(name=PARAM_DISAMBIGUATOR, defaultValue="Default")
 	private String DISAMBIGUATOR;
 
+    public static final String PARAM_ENABLED = "enabled";
+	@ConfigurationParameter(name=PARAM_ENABLED, defaultValue="true")
+	private boolean ENABLED;
+
 	private final int BATCH_SIZE = 10;
 
     private static final List<String> NER_VARIANTS = Arrays.asList(new String[] {
@@ -69,6 +73,10 @@ public class SpotlightNameFinder extends JCasAnnotator_ImplBase {
 	final DBpediaTypes dbt = new DBpediaTypes();
 
 	public void process(JCas aJCas) throws AnalysisEngineProcessException {
+	    if (!ENABLED) {
+	        LOG.warn("DBPedia Spotlight is disabled");
+	        return;
+	    }
 		String documentText = aJCas.getDocumentText();
 
 		// don't query endpoint without text
