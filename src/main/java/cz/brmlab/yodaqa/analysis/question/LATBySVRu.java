@@ -1,5 +1,6 @@
 package cz.brmlab.yodaqa.analysis.question;
 
+import cz.brmlab.yodaqa.Language;
 import cz.brmlab.yodaqa.model.Question.SV;
 import cz.brmlab.yodaqa.model.TyCor.QuestionWordLAT;
 import cz.brmlab.yodaqa.provider.MultiLanguageDictionaryFacade;
@@ -62,7 +63,7 @@ public class LATBySVRu extends LATBySV {
 
     @Override
     public void deriveSVLAT(JCas jcas, SV sv) throws JWNLException {
-        IndexWord w = dictionary.getIndexWord(net.sf.extjwnl.data.POS.VERB, sv.getBase().getLemma().getValue(), "ru");
+        IndexWord w = dictionary.getIndexWord(net.sf.extjwnl.data.POS.VERB, sv.getBase().getLemma().getValue(), Language.RUSSIAN);
         if (w == null)
             return;
 
