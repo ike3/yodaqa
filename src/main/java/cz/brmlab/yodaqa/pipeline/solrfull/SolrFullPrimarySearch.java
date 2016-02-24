@@ -29,6 +29,7 @@ import cz.brmlab.yodaqa.analysis.ansscore.AnswerFV;
 import cz.brmlab.yodaqa.flow.asb.MultiThreadASB;
 import cz.brmlab.yodaqa.flow.dashboard.AnswerSourceEnwiki;
 import cz.brmlab.yodaqa.flow.dashboard.QuestionDashboard;
+import cz.brmlab.yodaqa.analysis.MultiLanguageParser;
 import cz.brmlab.yodaqa.analysis.ansscore.AF;
 import cz.brmlab.yodaqa.model.Question.Clue;
 import cz.brmlab.yodaqa.model.Question.ClueConcept;
@@ -267,7 +268,7 @@ public class SolrFullPrimarySearch extends JCasMultiplier_ImplBase {
 		}
 		// System.err.println("--8<-- " + text + " --8<--");
 		resultView.setDocumentText(text);
-		resultView.setDocumentLanguage("en"); // XXX
+		resultView.setDocumentLanguage(MultiLanguageParser.getLanguage(text));
 
 		AnswerFV afv = new AnswerFV();
 		afv.setFeature(AF.ResultRR, 1 / ((float) result.rank));
