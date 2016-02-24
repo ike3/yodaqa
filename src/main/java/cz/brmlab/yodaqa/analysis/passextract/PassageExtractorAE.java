@@ -2,6 +2,7 @@ package cz.brmlab.yodaqa.analysis.passextract;
 
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
 import org.apache.uima.cas.CAS;
+import org.apache.uima.fit.descriptor.ConfigurationParameter;
 import org.apache.uima.fit.factory.*;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.slf4j.Logger;
@@ -30,6 +31,7 @@ public class PassageExtractorAE /* XXX: extends AggregateBuilder ? */ {
 	public static final int PARAM_PASS_SEL_FIRST = 1;
 
     public static class MultiLanguageParserExt extends MultiLanguageParser {
+
         @Override
         protected AnalysisEngineDescription createEngineDescription(String language) throws ResourceInitializationException {
             AggregateBuilder builder = new AggregateBuilder();
@@ -44,6 +46,7 @@ public class PassageExtractorAE /* XXX: extends AggregateBuilder ? */ {
             }
             return builder.createAggregateDescription();
         }
+
     }
 
 	public static AnalysisEngineDescription createEngineDescription(int passSelection)
@@ -55,8 +58,8 @@ public class PassageExtractorAE /* XXX: extends AggregateBuilder ? */ {
 		// with incomplete sentences e.g. separated by paragraphs etc.
 		// However, StanfordSegmenter handles numerical quantities
 		// (like 10,900) much better.
-		builder.add(createPrimitiveDescription(MultiLanguageParserExt.class),
-		        CAS.NAME_DEFAULT_SOFA, "Result");
+		builder.add(AnalysisEngineFactory.createEngineDescription(MultiLanguageParserExt.class,
+		        MultiLanguageParser.PARAM_VIEW_NAME, "Result"));
 
 		/* At this point, we can filter the source to keep
 		 * only sentences and tokens we care about: */

@@ -69,8 +69,8 @@ public class AnswerAnalysisAE /* XXX: extends AggregateBuilder ? */ {
 		 * in that case, rerun StanfordParser just on the answer. */
 		builder.add(createPrimitiveDescription(FindReqParse.class),
 			CAS.NAME_DEFAULT_SOFA, "Answer");
-		builder.add(createPrimitiveDescription(MultiLanguageParserExt.class),
-			CAS.NAME_DEFAULT_SOFA, "Answer");
+		builder.add(AnalysisEngineFactory.createEngineDescription(MultiLanguageParserExt.class,
+		        MultiLanguageParser.PARAM_VIEW_NAME, "Answer"));
 
 		/* Generate and store on the side a "syntactically canonical
 		 * form" of the answer text. */

@@ -9,6 +9,7 @@ import de.tudarmstadt.ukp.dkpro.core.treetagger.TreeTaggerPosTagger;
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.fit.component.CasDumpWriter;
+import org.apache.uima.fit.descriptor.ConfigurationParameter;
 import org.apache.uima.fit.factory.*;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.dbpedia.spotlight.uima.SpotlightNameFinder;
@@ -34,30 +35,25 @@ public class PassageAnalysisAE /* XXX: extends AggregateBuilder ? */ {
 	final static Logger logger = LoggerFactory.getLogger(PassageAnalysisAE.class);
 
     public static class MultiLanguageParserExt extends MultiLanguageParser {
+
         @Override
         protected AnalysisEngineDescription createEngineDescription(String language) throws ResourceInitializationException {
             AggregateBuilder builder = new AggregateBuilder();
             if ("en".equals(language)) {
                 /* POS, constituents, dependencies: */
-                builder.add(createPrimitiveDescription(PipelineLogger.class,
-                            PipelineLogger.PARAM_LOG_MESSAGE, "Parsing"));
                 builder.add(createPrimitiveDescription(
                         StanfordParser.class,
                         StanfordParser.PARAM_MAX_TOKENS, 50, // more takes a lot of RAM and is sloow, StanfordParser is O(N^2)
                         StanfordParser.PARAM_WRITE_POS, true),
-                    CAS.NAME_DEFAULT_SOFA, "PickedPassages");
+                        CAS.NAME_DEFAULT_SOFA, "PickedPassages");
 
                 /* Lemma features: */
-                builder.add(createPrimitiveDescription(PipelineLogger.class,
-                            PipelineLogger.PARAM_LOG_MESSAGE, "Lemmatization"));
                 builder.add(createPrimitiveDescription(LanguageToolLemmatizer.class),
-                    CAS.NAME_DEFAULT_SOFA, "PickedPassages");
+                        CAS.NAME_DEFAULT_SOFA, "PickedPassages");
 
                 /* Named Entities: */
-                builder.add(createPrimitiveDescription(PipelineLogger.class,
-                            PipelineLogger.PARAM_LOG_MESSAGE, "Named Entities"));
                 builder.add(OpenNlpNamedEntities.createEngineDescription(),
-                    CAS.NAME_DEFAULT_SOFA, "PickedPassages");
+                        CAS.NAME_DEFAULT_SOFA, "PickedPassages");
             } else {
                 builder.add(createPrimitiveDescription(TreeTaggerPosTagger.class),
                         CAS.NAME_DEFAULT_SOFA, "PickedPassages");
@@ -83,8 +79,8 @@ public class PassageAnalysisAE /* XXX: extends AggregateBuilder ? */ {
 		/* Our passages are already split to sentences
 		 * and tokenized. */
 
-		builder.add(createPrimitiveDescription(MultiLanguageParserExt.class),
-		        CAS.NAME_DEFAULT_SOFA, "PickedPassages");
+		builder.add(AnalysisEngineFactory.createEngineDescription(MultiLanguageParserExt.class,
+		        MultiLanguageParser.PARAM_VIEW_NAME, "PickedPassages"));
 
 		builder.add(createPrimitiveDescription(PipelineLogger.class,
 					PipelineLogger.PARAM_LOG_MESSAGE, "QA analysis"));
