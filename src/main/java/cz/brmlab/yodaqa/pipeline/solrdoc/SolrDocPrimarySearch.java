@@ -98,12 +98,7 @@ public class SolrDocPrimarySearch extends JCasMultiplier_ImplBase {
 
 	@Override
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
-		//TODO check this place
-		try {
-			questionView = jcas.getView("Question");
-		} catch (CASException e) {
-			questionView = jcas;
-		}
+		questionView = jcas;
 
 		SolrDocumentList documents;
 		try {

@@ -80,7 +80,7 @@ public class Solr implements Closeable {
 		QueryResponse rsp;
 		while (true) {
 			try {
-				rsp = server.query(query, METHOD.POST);
+				rsp = server.query(query, METHOD.GET);
 				break; // Success!
 			} catch (SolrServerException e) {
 				if (e.getRootCause() instanceof IOException)

@@ -58,8 +58,9 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 			 * instructions on how to obtain an example one. */
 
 			//SolrNamedSource.register("guten", "data/guten", null);
-			SolrNamedSource.register("guten", "bigdata", "http://okabanov:8983/solr/bigdata/");
-//			SolrNamedSource.register("enwiki", "collection1", "http://enwiki.ailao.eu:8983/solr/");
+			SolrNamedSource.register("guten", "bigdata", "http://nl.opensolr.com/solr/bigdata");
+			//SolrNamedSource.register("guten", "bigdata", "http://okabanov:8983/solr/bigdata/");
+			//SolrNamedSource.register("enwiki", "collection1", "http://enwiki.ailao.eu:8983/solr/");
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.err.println("*** Exception caught during SolrNamedSource initialization. ***");
@@ -351,18 +352,18 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 		 * PARAM_ISLAST_BARRIER. */
 
 		/* Structured search: */
-//		AnalysisEngineDescription dbpOnt = DBpediaOntologyAnswerProducer.createEngineDescription();
-//		builder.add(dbpOnt);
-//		AnalysisEngineDescription dbpProp = DBpediaPropertyAnswerProducer.createEngineDescription();
-//		builder.add(dbpProp);
-//		AnalysisEngineDescription fbOnt = FreebaseOntologyAnswerProducer.createEngineDescription();
-//		builder.add(fbOnt);
+		AnalysisEngineDescription dbpOnt = DBpediaOntologyAnswerProducer.createEngineDescription();
+		builder.add(dbpOnt);
+		AnalysisEngineDescription dbpProp = DBpediaPropertyAnswerProducer.createEngineDescription();
+		builder.add(dbpProp);
+		AnalysisEngineDescription fbOnt = FreebaseOntologyAnswerProducer.createEngineDescription();
+		builder.add(fbOnt);
 
 		/* Full-text search: */
 		/* XXX: These aggregates have "Solr" in name but do not
 		 * necessarily use just Solr, e.g. Bing. */
-//		AnalysisEngineDescription solrFull = SolrFullAnswerProducer.createEngineDescription();
-//		builder.add(solrFull); /* This one is worth 3 isLasts. */
+		AnalysisEngineDescription solrFull = SolrFullAnswerProducer.createEngineDescription();
+		builder.add(solrFull); /* This one is worth 3 isLasts. */
 		AnalysisEngineDescription solrDoc = SolrDocAnswerProducer.createEngineDescription();
 		builder.add(solrDoc);
 

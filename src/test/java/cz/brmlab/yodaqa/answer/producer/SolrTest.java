@@ -15,6 +15,7 @@ import cz.brmlab.yodaqa.model.SearchResult.CandidateAnswer;
 import cz.brmlab.yodaqa.model.SearchResult.ResultInfo;
 import cz.brmlab.yodaqa.pipeline.YodaQA;
 import cz.brmlab.yodaqa.pipeline.solrdoc.SolrDocAnswerProducer;
+import cz.brmlab.yodaqa.pipeline.solrfull.SolrFullAnswerProducer;
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.FSIterator;
@@ -56,13 +57,13 @@ public class SolrTest extends MultiCASPipelineTest {
                 qc.setQuestionClass("HUM");
                 qc.addToIndexes(qView);
 
-                ClueNE c1 = new ClueNE(qView);
+                ClueNE c1 = new ClueNE(jcas);
                 c1.setLabel(CLUE_NE);
-                c1.addToIndexes(qView);
+                c1.addToIndexes(jcas);
 
-                ClueLAT c2 = new ClueLAT(qView);
+                ClueLAT c2 = new ClueLAT(jcas);
                 c2.setLabel(CLUE_LAT);
-                c2.addToIndexes(qView);
+                c2.addToIndexes(jcas);
 
                 JCas rView = jcas.createView("Result");
                 rView.setDocumentText(RESULT);
@@ -109,7 +110,7 @@ public class SolrTest extends MultiCASPipelineTest {
         RESULT = "Garry potter answer";
         QUESTION = "Garry";
         CLUE_NE = "Potter";
-        CLUE_LAT = "Гарри";
+        CLUE_LAT = "Garry";
         runPipeline(Tested.class, "это игнорируется", builder, TestConsumer.class);
     }
 
@@ -118,7 +119,7 @@ public class SolrTest extends MultiCASPipelineTest {
     public void solrTestRu() throws Exception {
         new YodaQA();
         AggregateBuilder builder = getAggregateBuilder();
-        RESULT = "Гарри поттер";
+        RESULT = "Гарри поттер результат из теста";
         QUESTION = "Гарри";
         CLUE_NE = "Поттер";
         CLUE_LAT = "Гарри";
@@ -128,10 +129,12 @@ public class SolrTest extends MultiCASPipelineTest {
     private AggregateBuilder getAggregateBuilder() throws ResourceInitializationException {
         AggregateBuilder builder = new AggregateBuilder();
         AnalysisEngineDescription solrDoc = SolrDocAnswerProducer.createEngineDescription();
+        AnalysisEngineDescription solrFull = SolrFullAnswerProducer.createEngineDescription();
 
         builder.add(PassageExtractorAE.createEngineDescription(PassageExtractorAE.PARAM_PASS_SEL_BYCLUE));
         builder.add(PassageAnalysisAE.createEngineDescription());
         builder.add(solrDoc);
+        builder.add(solrFull);
         return builder;
     }
 }
