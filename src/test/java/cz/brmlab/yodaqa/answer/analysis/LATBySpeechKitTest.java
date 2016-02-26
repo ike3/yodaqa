@@ -71,6 +71,7 @@ public class LATBySpeechKitTest extends MultiCASPipelineTest {
     }
 
     @Test
+    @Ignore // requires api key
     public void runRU() throws Exception {
         new YodaQA();
         AggregateBuilder builder = new AggregateBuilder();

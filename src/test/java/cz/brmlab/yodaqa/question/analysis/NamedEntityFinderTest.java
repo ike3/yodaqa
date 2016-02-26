@@ -20,8 +20,7 @@ import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
 import org.dbpedia.spotlight.uima.SpotlightNameFinder;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.*;
 
 import java.util.Set;
 import java.util.TreeSet;
@@ -101,6 +100,7 @@ public class NamedEntityFinderTest extends MultiCASPipelineTest {
     }
 
     @Test
+    @Ignore // requires api key
     public void speechKitNameFinderRu() throws Exception {
         new YodaQA();
         AggregateBuilder builder = new AggregateBuilder();
