@@ -7,6 +7,13 @@ public class DefaultParameters {
 
     public static void apply() {
         /*
+         * Solr
+         */
+        if (StringUtils.isEmpty(System.getProperty("cz.brmlab.yodaqa.solr_url"))) {
+            System.setProperty("cz.brmlab.yodaqa.solr_url", "http://localhost:8983/solr/bigdata/");
+        }
+
+        /*
          * Spotlight
          */
         if (StringUtils.isEmpty(System.getProperty("cz.brmlab.yodaqa.spotlight_name_finder_endpoint"))) {
