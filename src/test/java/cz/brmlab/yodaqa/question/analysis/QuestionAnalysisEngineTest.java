@@ -11,7 +11,7 @@ import cz.brmlab.yodaqa.model.Question.*;
 import cz.brmlab.yodaqa.model.TyCor.LAT;
 import de.tudarmstadt.ukp.dkpro.core.api.ner.type.NamedEntity;
 import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.dependency.Dependency;
-import de.tudarmstadt.ukp.dkpro.core.maltparser.MaltParser;
+import de.tudarmstadt.ukp.dkpro.core.maltparser.*;
 import de.tudarmstadt.ukp.dkpro.core.tokit.BreakIteratorSegmenter;
 import de.tudarmstadt.ukp.dkpro.core.treetagger.TreeTaggerPosTagger;
 import org.apache.uima.UIMAException;
@@ -93,7 +93,7 @@ public class QuestionAnalysisEngineTest {
         builder.add(AnalysisEngineFactory.createEngineDescription(BreakIteratorSegmenter.class));
         builder.add(AnalysisEngineFactory.createEngineDescription(TreeTaggerPosTagger.class));
 //        builder.add(AnalysisEngineFactory.createEngineDescription(TreeTaggerPosToSynTagRus.class));
-        builder.add(AnalysisEngineFactory.createEngineDescription(MaltParser.class));
+        builder.add(AnalysisEngineFactory.createEngineDescription(SingleThreadedMaltParser.class));
         builder.add(AnalysisEngineFactory.createEngineDescription(RootGenerator.class));
         builder.add(AnalysisEngineFactory.createEngineDescription(
                 SpotlightNameFinder.class,

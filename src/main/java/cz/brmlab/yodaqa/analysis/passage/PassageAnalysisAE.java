@@ -1,7 +1,7 @@
 package cz.brmlab.yodaqa.analysis.passage;
 
 import de.tudarmstadt.ukp.dkpro.core.languagetool.LanguageToolLemmatizer;
-import de.tudarmstadt.ukp.dkpro.core.maltparser.MaltParser;
+import de.tudarmstadt.ukp.dkpro.core.maltparser.*;
 import de.tudarmstadt.ukp.dkpro.core.stanfordnlp.*;
 import de.tudarmstadt.ukp.dkpro.core.tokit.BreakIteratorSegmenter;
 import de.tudarmstadt.ukp.dkpro.core.treetagger.TreeTaggerPosTagger;
@@ -57,7 +57,8 @@ public class PassageAnalysisAE /* XXX: extends AggregateBuilder ? */ {
             } else {
                 builder.add(createPrimitiveDescription(TreeTaggerPosTagger.class),
                         CAS.NAME_DEFAULT_SOFA, "PickedPassages");
-                builder.add(createPrimitiveDescription(MaltParser.class),
+                builder.add(createPrimitiveDescription("true".equals(System.getProperty("cz.brmlab.yodaqa.malt_parser_single_threaded")) ?
+                        SingleThreadedMaltParser.class : MaltParser.class),
                         CAS.NAME_DEFAULT_SOFA, "PickedPassages");
                 builder.add(AnalysisEngineFactory.createEngineDescription(
                         SpotlightNameFinder.class,
@@ -79,8 +80,8 @@ public class PassageAnalysisAE /* XXX: extends AggregateBuilder ? */ {
 		/* Our passages are already split to sentences
 		 * and tokenized. */
 
-		builder.add(AnalysisEngineFactory.createEngineDescription(MultiLanguageParserExt.class,
-		        MultiLanguageParser.PARAM_VIEW_NAME, "PickedPassages"));
+		builder.add(AnalysisEngineFactory.createPrimitiveDescription(MultiLanguageParserExt.class),
+		        CAS.NAME_DEFAULT_SOFA, "PickedPassages");
 
 		builder.add(createPrimitiveDescription(PipelineLogger.class,
 					PipelineLogger.PARAM_LOG_MESSAGE, "QA analysis"));

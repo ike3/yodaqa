@@ -5,7 +5,7 @@ import cz.brmlab.yodaqa.analysis.RootGenerator;
 import cz.brmlab.yodaqa.analysis.tycor.LATByWordnet;
 import cz.brmlab.yodaqa.analysis.tycor.LATByWordnetGeneral;
 import cz.brmlab.yodaqa.io.debug.DumpConstituents;
-import de.tudarmstadt.ukp.dkpro.core.maltparser.MaltParser;
+import de.tudarmstadt.ukp.dkpro.core.maltparser.*;
 import de.tudarmstadt.ukp.dkpro.core.tokit.BreakIteratorSegmenter;
 import de.tudarmstadt.ukp.dkpro.core.treetagger.TreeTaggerPosTagger;
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
@@ -29,7 +29,8 @@ public class QuestionAnalysisEngineRu {
         builder.add(AnalysisEngineFactory.createEngineDescription(TreeTaggerPosTagger.class));
 //        builder.add(AnalysisEngineFactory.createEngineDescription(TreeTaggerPosToSynTagRus.class));
         //Dependency tagging
-        builder.add(AnalysisEngineFactory.createEngineDescription(MaltParser.class));
+        builder.add(AnalysisEngineFactory.createEngineDescription("true".equals(System.getProperty("cz.brmlab.yodaqa.malt_parser_single_threaded")) ?
+                SingleThreadedMaltParser.class : MaltParser.class));
         builder.add(AnalysisEngineFactory.createEngineDescription(RootGenerator.class));
         //NameFinder
         builder.add(AnalysisEngineFactory.createEngineDescription(

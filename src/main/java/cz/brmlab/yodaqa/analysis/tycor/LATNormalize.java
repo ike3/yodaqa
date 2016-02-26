@@ -114,7 +114,7 @@ public class LATNormalize extends JCasAnnotator_ImplBase {
 		 * this way, though! */
         AnalysisEngineFactory_impl aeFactory = new AnalysisEngineFactory_impl();
         AnalysisEngineDescription pipelineDesc = AnalysisEngineFactory.createEngineDescription(
-                    AnalysisEngineFactory.createEngineDescription(MultiLanguageParserExt.class));
+                    AnalysisEngineFactory.createPrimitiveDescription(MultiLanguageParserExt.class));
         pipeline = (AnalysisEngine) aeFactory.produceResource(AnalysisEngine.class, pipelineDesc, null);
 	}
 

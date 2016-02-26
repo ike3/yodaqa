@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -169,6 +169,9 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
   protected static final ExecutorService primitiveExecutor;
   static {
     String maxJobsEnv = System.getenv("YODAQA_N_THREADS");
+    if (maxJobsEnv == null) {
+        maxJobsEnv = System.getProperty("cz.brmlab.yodaqa.thread_pool_size");
+    }
     if (maxJobsEnv != null) {
       maxJobs = Integer.parseInt(maxJobsEnv);
     } else {
@@ -194,16 +197,16 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
 
   /**
    * Initializes this ASB.
-   * 
+   *
    * @param aSpecifier
    *          describes how to create this ASB.
    * @param aAdditionalParams
    *          parameters which are passed along to the delegate Analysis Engines when they are
    *          constructed
-   * 
+   *
    * @return true if and only if initialization completed successfully. Returns false if this
    *         implementation cannot handle the given <code>ResourceSpecifier</code>.
-   * 
+   *
    * @see org.apache.uima.resource.Resource#initialize(ResourceSpecifier, Map)
    */
   public boolean initialize(ResourceSpecifier aSpecifier, Map<String, Object> aAdditionalParams)
@@ -244,7 +247,7 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
       Resource delegate = entry.getValue();
       delegate.destroy();
     }
-    
+
     if (mFlowControllerContainer != null &&
         // the container might be non-null, but the initialization could have failed
   // XXX: we disable this check for now as isInitialized() is not public
@@ -260,7 +263,7 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
    * Called after calling initialize() (see above)
    * by the Aggregate Analysis Engine to provide this ASB with information it needs to
    * operate.
-   * 
+   *
    * @param aSpecifiers
    *          the specifiers for all component AEs within this Aggregate. The ASB will instantiate
    *          those AEs.
@@ -309,7 +312,7 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
       // mInitParams was previously set to the value of aAdditionalParams
       //  passed to the initialize method of this aggregate, by the
       //  preceeding call to initialize().
-      
+
       if (mInitParams == null)
         mInitParams = new HashMap<String, Object>();
       UimaContextAdmin childContext = aParentContext.createChild(key, sofamap);
@@ -409,7 +412,7 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.apache.uima.analysis_engine.asb.ASB#process(org.apache.uima.cas.CAS)
    */
   public CasIterator process(CAS aCAS) throws AnalysisEngineProcessException {
@@ -433,7 +436,7 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
   /**
    * Inner class implementing the CasIterator returned from the processAndOutputNewCASes(CAS)
    * method. This class contains most of the execution control logic for the aggregate AE.
-   * 
+   *
    */
   class AggregateCasIterator implements CasIterator {
     /** The CAS that was input to the Aggregate AE's process method. */
@@ -470,7 +473,7 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
     /**
      * Creates a new AggregateCasIterator for the given input CAS. The CasIterator will return all
      * of the output CASes that this Aggregate AE generates when run on that input CAS, if any.
-     * 
+     *
      * @param inputCas
      *          the CAS to be input to the Aggregate AE (this is the CAS that was passed to the
      *          Aggregate AE's processAndOutputNewCASes(CAS) method)
@@ -538,7 +541,7 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.apache.uima.analysis_engine.CasIterator#release()
      */
     public void release() {
@@ -549,7 +552,7 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
         frame.originalCIF.flow.aborted();
         frame.casIterator.release();
       }
-      
+
       // release all active, internal CASes
       Iterator<CAS> iter = activeCASes.iterator();
       while (iter.hasNext()) {
@@ -562,7 +565,7 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
       }
       //clear the active CASes list, to guard against ever trying to
       //reuse these CASes or trying to release them a second time.
-      activeCASes.clear();       
+      activeCASes.clear();
     }
 
     /** Retrieve a new CAS-in-flow to process from the CasMultiplier stack.
@@ -913,7 +916,7 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
 
     /** Perform a parallel flow step with the Cas. */
     protected List<Future<CasIterator>> processParallelStep(CasInFlow cif, ParallelStep nextStep) throws Exception {
-      //create modifiable list of destinations 
+      //create modifiable list of destinations
       List<String> destinations = new ArrayList<String>((nextStep).getAnalysisEngineKeys());
       //execute them
       List<Future<CasIterator>> futures = new ArrayList<>(destinations.size());
@@ -1025,10 +1028,10 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
      * current state, until such time as the FlowController indicates a CAS should be returned to
      * the caller. The AggregateCasIterator remembers the state, so calling this method a second
      * time will continue processing from where it left off.
-     * 
+     *
      * @return the next CAS to be output. Returns null if the processing of the input CAS has
      *         completed.
-     * 
+     *
      * @throws ProcessingException
      *           if a failure occurs during processing
      */

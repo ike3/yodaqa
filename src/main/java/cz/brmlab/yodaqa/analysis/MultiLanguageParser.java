@@ -18,10 +18,6 @@ import org.slf4j.*;
 public abstract class MultiLanguageParser extends JCasAnnotator_ImplBase {
 	final Logger logger = LoggerFactory.getLogger(MultiLanguageParser.class);
 
-    public static final String PARAM_VIEW_NAME = "view-name";
-    @ConfigurationParameter(name=PARAM_VIEW_NAME, defaultValue="")
-    private String viewName;
-
 	private Map<String, AnalysisEngine> pipelines = new HashMap<>();
 
 	public synchronized void initialize(UimaContext aContext) throws ResourceInitializationException {
@@ -33,24 +29,15 @@ public abstract class MultiLanguageParser extends JCasAnnotator_ImplBase {
 
         AnalysisEngineDescription pipelineDescEn = createEngineDescription("en");
         pipelines.put("en", (AnalysisEngine) aeFactory.produceResource(AnalysisEngine.class, pipelineDescEn, null));
+
+        logger.info("{} instance is initialized", getClass().getName());
 	}
 
 	protected abstract AnalysisEngineDescription createEngineDescription(String language) throws ResourceInitializationException;
 
     public synchronized void process(JCas jcas) throws AnalysisEngineProcessException {
         try {
-            if (StringUtils.isEmpty(viewName)) {
-                run(jcas);
-                return;
-            }
-
-            for (Iterator<JCas> i = jcas.getViewIterator(); i.hasNext();) {
-                JCas view = i.next();
-                if (view.getViewName().equals(viewName)) {
-                    run(view);
-                    return;
-                }
-            }
+            run(jcas);
         } catch (Exception e) {
             throw new AnalysisEngineProcessException(e);
         }
@@ -64,12 +51,45 @@ public abstract class MultiLanguageParser extends JCasAnnotator_ImplBase {
 
         AnalysisEngine analysisEngine = pipelines.get(jcas.getDocumentLanguage());
         if (analysisEngine != null) {
-            analysisEngine.process(jcas);
+            class Watcher extends Thread {
+                volatile boolean finished = false;
+                Class<?> cls;
+                String text, language;
+
+                @Override
+                public void run() {
+                    int time = 0;
+                    while (!finished) {
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException e) {
+                        }
+                        time+=1000;
+
+                        if (time > 5000) {
+                            logger.info("{} ({}) is still working on {}", cls.getName(), language, text);
+                        }
+                    }
+                }
+            };
+
+            Watcher watcher = new Watcher();
+            watcher.cls = getClass();
+            watcher.text = jcas.getDocumentText();
+            watcher.language = jcas.getDocumentLanguage();
+            watcher.start();
+            try {
+                analysisEngine.process(jcas);
+            } catch (Exception e) {
+                throw new AnalysisEngineProcessException(e);
+            } finally {
+                watcher.finished = true;
+                logger.info("{} ends to process jcas {}", getClass().getName(), jcas.getDocumentText());
+            }
         } else {
-            logger.error(String.format("MultiLanguageParser has no engine for language %s. CAS text = %s, view = %s",
+            logger.error(String.format("MultiLanguageParser has no engine for language %s. CAS text = %s",
                     jcas.getDocumentLanguage(),
-                    jcas.getDocumentText(),
-                    viewName));
+                    jcas.getDocumentText()));
         }
     }
 
@@ -85,14 +105,7 @@ public abstract class MultiLanguageParser extends JCasAnnotator_ImplBase {
 	}
 
 	public static String getLanguage(String text) {
-	    Pattern ruPattern = Pattern.compile(
-	            "[" +                   //начало списка допустимых символов
-	                    "а-яА-ЯёЁ" +    //буквы русского алфавита
-	                    "\\d" +         //цифры
-	                    "\\s" +         //знаки-разделители (пробел, табуляция и т.д.)
-	                    "\\p{Punct}" +  //знаки пунктуации
-	            "]" +                   //конец списка допустимых символов
-	            "*");                   //допускается наличие указанных символов в любом количестве
+	    Pattern ruPattern = Pattern.compile(".*[а-яА-ЯёЁ]+.*");
 	    if (ruPattern.matcher(text).matches()) {
 	        return "ru";
 	    }

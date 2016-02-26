@@ -32,3 +32,4 @@ bingresults.db
 bin
 target
 dump
+contrib/solr*

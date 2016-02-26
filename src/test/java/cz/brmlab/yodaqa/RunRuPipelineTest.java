@@ -14,7 +14,8 @@ import cz.brmlab.yodaqa.pipeline.YodaQA;
 /**
  * Где родился Лучано Паваротти
  * Сколько планет в Солнечной Системе
- * Сколько стран на Земле
+ * Сколько стран на Земле (TODO java.lang.ArrayIndexOutOfBoundsException: originPsgByClue) (PassByClue.java:120)
+ * как правильно держать вилку
  *
  */
 public class RunRuPipelineTest {
@@ -30,11 +31,11 @@ public class RunRuPipelineTest {
         CollectionReaderDescription reader = createReaderDescription(
                 SimpleQuestion.class,
                 SimpleQuestion.PARAM_LANGUAGE, Language.RUSSIAN,
-                SimpleQuestion.PARAM_INPUT, "Сколько стран на Земле?");
+                SimpleQuestion.PARAM_INPUT, "как правильно держать вилку?");
 
         AnalysisEngineDescription printer = createEngineDescription(InteractiveAnswerPrinter.class);
 
-        ParallelEngineFactory.registerFactory();
+        //ParallelEngineFactory.registerFactory();
 
         MultiCASPipeline.runPipeline(reader, pipeline, printer);
     }

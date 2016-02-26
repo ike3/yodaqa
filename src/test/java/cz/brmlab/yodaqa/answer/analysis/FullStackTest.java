@@ -22,7 +22,7 @@ import cz.brmlab.yodaqa.model.TyCor.LAT;
 import cz.brmlab.yodaqa.pipeline.*;
 import cz.brmlab.yodaqa.provider.OpenNlpNamedEntities;
 import de.tudarmstadt.ukp.dkpro.core.languagetool.LanguageToolLemmatizer;
-import de.tudarmstadt.ukp.dkpro.core.maltparser.MaltParser;
+import de.tudarmstadt.ukp.dkpro.core.maltparser.*;
 import de.tudarmstadt.ukp.dkpro.core.tokit.BreakIteratorSegmenter;
 import de.tudarmstadt.ukp.dkpro.core.treetagger.TreeTaggerPosTagger;
 
@@ -142,7 +142,7 @@ public class FullStackTest extends MultiCASPipelineTest {
                 CAS.NAME_DEFAULT_SOFA, "Answer");
         builder.add(createPrimitiveDescription(TreeTaggerPosTagger.class),
                 CAS.NAME_DEFAULT_SOFA, "Answer");
-        builder.add(AnalysisEngineFactory.createEngineDescription(MaltParser.class),
+        builder.add(AnalysisEngineFactory.createEngineDescription(SingleThreadedMaltParser.class),
                 CAS.NAME_DEFAULT_SOFA, "Answer");
         /*builder.add(createPrimitiveDescription(SpotlightNameFinder.class,
                 SpotlightNameFinder.PARAM_ENDPOINT, "http://spotlight.sztaki.hu:2227/rest/annotate"),

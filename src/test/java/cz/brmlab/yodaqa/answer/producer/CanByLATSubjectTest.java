@@ -18,7 +18,7 @@ import cz.brmlab.yodaqa.model.Question.QuestionInfo;
 import cz.brmlab.yodaqa.model.SearchResult.*;
 import cz.brmlab.yodaqa.model.TyCor.LAT;
 import de.tudarmstadt.ukp.dkpro.core.languagetool.LanguageToolLemmatizer;
-import de.tudarmstadt.ukp.dkpro.core.maltparser.MaltParser;
+import de.tudarmstadt.ukp.dkpro.core.maltparser.*;
 import de.tudarmstadt.ukp.dkpro.core.stanfordnlp.StanfordParser;
 import de.tudarmstadt.ukp.dkpro.core.tokit.BreakIteratorSegmenter;
 import de.tudarmstadt.ukp.dkpro.core.treetagger.TreeTaggerPosTagger;
@@ -109,7 +109,7 @@ public class CanByLATSubjectTest extends MultiCASPipelineTest {
                 CAS.NAME_DEFAULT_SOFA, "PickedPassages");
         builder.add(createPrimitiveDescription(TreeTaggerPosTagger.class),
                 CAS.NAME_DEFAULT_SOFA, "PickedPassages");
-        builder.add(AnalysisEngineFactory.createEngineDescription(MaltParser.class),
+        builder.add(AnalysisEngineFactory.createEngineDescription(SingleThreadedMaltParser.class),
                 CAS.NAME_DEFAULT_SOFA, "PickedPassages");
 
         builder.add(createPrimitiveDescription(CanByLATSubject.class));
