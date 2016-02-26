@@ -11,10 +11,10 @@ import org.junit.*;
 
 import cz.brmlab.yodaqa.*;
 import cz.brmlab.yodaqa.analysis.ansscore.AnswerFV;
-import cz.brmlab.yodaqa.analysis.tycor.LATByWordnet;
+import cz.brmlab.yodaqa.analysis.tycor.*;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerInfo;
 import cz.brmlab.yodaqa.model.TyCor.*;
-import de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.POS;
+import de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.*;
 
 /*
  */
@@ -40,7 +40,7 @@ public class LATByWordnetTest extends MultiCASPipelineTest {
                 lat.setText(INPUT);
                 lat.addToIndexes(jcas);
 
-                POS pos = new POS(jcas);
+                POS pos = new NN(jcas);
                 pos.setPosValue("NN");
                 lat.setPos(pos);
 

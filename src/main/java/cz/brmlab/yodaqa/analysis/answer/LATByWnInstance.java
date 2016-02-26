@@ -79,7 +79,13 @@ public class LATByWnInstance extends JCasAnnotator_ImplBase {
 	}
 
 	public boolean processOne(JCas jcas, Annotation base, String text) throws Exception {
-		IndexWord w = dictionaryMap.get(jcas.getDocumentLanguage()).getIndexWord(net.sf.extjwnl.data.POS.NOUN, text);
+		IndexWord w;
+        try {
+            w = dictionaryMap.get(jcas.getDocumentLanguage()).getIndexWord(net.sf.extjwnl.data.POS.NOUN, text);
+        } catch (Exception e) {
+            logger.error("Error getting word from wordnet: " + text, e);
+            return false;
+        }
 		if (w == null)
 			return false;
 		for (Synset synset : w.getSenses()) {

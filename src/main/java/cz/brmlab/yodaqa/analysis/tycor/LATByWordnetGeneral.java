@@ -31,7 +31,6 @@ public class LATByWordnetGeneral extends LATByWordnet {
             logger.info("?! cannot expand LAT of POS " + latpos);
             return;
         }
-
 		/* For a debug message, concatenate all generated wordnet LATs
 		 * in this string. */
         boolean foundNoun = false;
@@ -42,7 +41,7 @@ public class LATByWordnetGeneral extends LATByWordnet {
 
             if (w == null)
             {
-                logger.info("?! word " + lat.getText() + " of POS " + latpos + " not in Wordnet");
+                logger.info("?! word " + lat.getText() + " of POS " + latpos + " not in Wordnet (mapped pos = " + wnpos + ")");
                 return;
             }
 

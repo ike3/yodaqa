@@ -1,18 +1,6 @@
 package cz.brmlab.yodaqa.analysis.tycor;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import net.sf.extjwnl.data.IndexWord;
-import net.sf.extjwnl.data.Word;
-import net.sf.extjwnl.data.PointerTarget;
-import net.sf.extjwnl.data.PointerType;
-import net.sf.extjwnl.data.Synset;
+import java.util.*;
 
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
@@ -21,13 +9,14 @@ import org.apache.uima.fit.descriptor.ConfigurationParameter;
 import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.slf4j.*;
 
-import cz.brmlab.yodaqa.model.TyCor.LAT;
-import cz.brmlab.yodaqa.model.TyCor.WordnetLAT;
-import cz.brmlab.yodaqa.provider.*;
+import cz.brmlab.yodaqa.model.TyCor.*;
+import cz.brmlab.yodaqa.provider.MultiLanguageDictionaryFacade;
+import de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.*;
+import de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.POS;
 import de.tudarmstadt.ukp.dkpro.core.api.ner.type.NamedEntity;
+import net.sf.extjwnl.data.*;
 
 /**
  * Generate less specific LAT annotations from existing LAT annotations
@@ -117,20 +106,21 @@ public class LATByWordnet extends JCasAnnotator_ImplBase {
 		 * (Typically: How hot is the sun? -> hotness) */
 
 		net.sf.extjwnl.data.POS wnpos;
-		if (lat.getBase() instanceof NamedEntity) {
-			wnpos = net.sf.extjwnl.data.POS.NOUN;
-		} else if (latpos.matches("^NN.*")) {
-			wnpos = net.sf.extjwnl.data.POS.NOUN;
-		} else if (latpos.matches("^JJ.*")) {
-			wnpos = net.sf.extjwnl.data.POS.ADJECTIVE;
-		} else if (latpos.matches("^RB.*")) {
-			wnpos = net.sf.extjwnl.data.POS.ADVERB;
-		} else if (latpos.matches("^VB.*")) {
-			wnpos = net.sf.extjwnl.data.POS.VERB;
-		} else {
-			logger.info("?! cannot expand LAT of POS " + latpos);
-			return;
-		}
+        POS pos = lat.getPos();
+        if (lat.getBase() instanceof NamedEntity) {
+            wnpos = net.sf.extjwnl.data.POS.NOUN;
+        } else if (pos instanceof N) {
+            wnpos = net.sf.extjwnl.data.POS.NOUN;
+        } else if (pos instanceof ADJ) {
+            wnpos = net.sf.extjwnl.data.POS.ADJECTIVE;
+        } else if (pos instanceof ADV) {
+            wnpos = net.sf.extjwnl.data.POS.ADVERB;
+        } else if (pos instanceof V) {
+            wnpos = net.sf.extjwnl.data.POS.VERB;
+        } else {
+            logger.info("?! cannot expand LAT of POS " + latpos);
+            return;
+        }
 
 		/* For a debug message, concatenate all generated wordnet LATs
 		 * in this string. */
@@ -147,7 +137,7 @@ public class LATByWordnet extends JCasAnnotator_ImplBase {
 
 			if (w == null)
 			{
-				logger.info("?! word " + lat.getText() + " of POS " + latpos + " not in Wordnet");
+				logger.info("?! word " + lat.getText() + " of POS " + latpos + " not in Wordnet (mapped pos = " + wnpos + ")");
 				return;
 			}
 
@@ -257,11 +247,16 @@ public class LATByWordnet extends JCasAnnotator_ImplBase {
 	protected void genDerivedSynsets(Map<Synset, WordnetLAT> latmap, LAT lat,
 			IndexWord wnoun, StringBuilder wnlist, double spec)
 			throws Exception {
-		for (Synset synset : wnoun.getSenses()) {
-			for (PointerTarget t : synset.getTargets(PointerType.HYPERNYM)) {
-				genDerivedSynsets(latmap, lat, (Synset) t, wnlist, spec);
-			}
-		}
+        try {
+            for (Synset synset : wnoun.getSenses()) {
+                for (PointerTarget t : synset.getTargets(PointerType.HYPERNYM)) {
+                    genDerivedSynsets(latmap, lat, (Synset) t, wnlist, spec);
+                }
+            }
+        } catch (Exception e) {
+            logger.warn("Error getting senses from wordnet: " + lat.getText());
+            return;
+        }
 	}
 
 	protected void genDerivedSynsets(Map<Synset, WordnetLAT> latmap, LAT lat,
