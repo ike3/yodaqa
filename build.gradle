@@ -10,6 +10,8 @@ buildscript {
 }
 
 apply plugin: 'java'
+compileJava.options.encoding = 'UTF-8'
+
 apply plugin: 'application'
 apply plugin: 'eclipse'
 apply plugin: 'com.dictanova.jcasgen'
@@ -25,8 +27,8 @@ run {
   standardInput = System.in
   if (project.hasProperty('execArgs'))
     args(execArgs.split(' '))
-  minHeapSize = "2048m"
-  maxHeapSize = "3100m"
+  minHeapSize = "4g"
+  maxHeapSize = "10g"
   systemProperties = System.getProperties()
 }
 
@@ -85,8 +87,8 @@ task(machine, dependsOn: 'classes', type: JavaExec) {
 
 task(web, dependsOn: 'classes', type: JavaExec) {
   main = 'cz.brmlab.yodaqa.YodaQA_Web'
-  minHeapSize = "2048m"
-  maxHeapSize = "3100m"
+  minHeapSize = "4g"
+  maxHeapSize = "10g"
   classpath = sourceSets.main.runtimeClasspath
   systemProperties = System.getProperties()
 }

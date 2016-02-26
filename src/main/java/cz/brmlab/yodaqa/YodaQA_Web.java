@@ -25,6 +25,8 @@ import static org.apache.uima.fit.factory.CollectionReaderFactory.createReaderDe
 
 public class YodaQA_Web {
 	public static void main(String[] args) throws Exception {
+	    System.setProperty("cz.brmlab.yodaqa.pipline_ru", "true");
+
 		WebInterface web = new WebInterface();
 		Thread webThread = new Thread(web);
 		webThread.setDaemon(true);
@@ -32,7 +34,7 @@ public class YodaQA_Web {
 
 		CollectionReaderDescription reader = createReaderDescription(
 				WebQuestionReader.class,
-				WebQuestionReader.PARAM_LANGUAGE, "en");
+				WebQuestionReader.PARAM_LANGUAGE, "ru");
 
 		AnalysisEngineDescription pipeline = YodaQA.createEngineDescription();
 
