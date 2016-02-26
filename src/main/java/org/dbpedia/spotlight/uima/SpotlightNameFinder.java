@@ -3,7 +3,7 @@ package org.dbpedia.spotlight.uima;
 import java.io.*;
 import java.util.*;
 
-import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.*;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
@@ -14,9 +14,10 @@ import org.dbpedia.spotlight.uima.response.*;
 import org.slf4j.*;
 
 import com.sun.jersey.api.client.*;
+import com.sun.jersey.core.util.MultivaluedMapImpl;
 
-import cz.brmlab.yodaqa.provider.rdf.*;
-import de.tudarmstadt.ukp.dkpro.core.api.ner.type.*;
+import cz.brmlab.yodaqa.provider.rdf.DBpediaTypes;
+import de.tudarmstadt.ukp.dkpro.core.api.ner.type.NamedEntityEx;
 
 
 public class SpotlightNameFinder extends JCasAnnotator_ImplBase {
@@ -124,9 +125,11 @@ public class SpotlightNameFinder extends JCasAnnotator_ImplBase {
 					LOG.info("Sending request to the server");
 
 					WebResource r = c.resource(SPOTLIGHT_ENDPOINT);
+					MultivaluedMap<String, String> formData = new MultivaluedMapImpl();
+					formData.add("text", request);
+
 					response =
-							r.queryParam("text", request)
-							.queryParam("confidence", "" + CONFIDENCE)
+							r.queryParam("confidence", "" + CONFIDENCE)
 							.queryParam("support", "" + SUPPORT)
 							.queryParam("types", TYPES)
 							.queryParam("sparql", SPARQL)
@@ -137,7 +140,7 @@ public class SpotlightNameFinder extends JCasAnnotator_ImplBase {
 							.queryParam("disambiguator", DISAMBIGUATOR)
 							.type("application/x-www-form-urlencoded;charset=UTF-8")
 							.accept(MediaType.TEXT_XML)
-							.post(Annotation.class);
+							.post(Annotation.class, formData);
 					retry = false;
 				} catch (Exception e){
 					//In case of a failure, try sending the request with a 2 second delay at least three times before throwing an exception
