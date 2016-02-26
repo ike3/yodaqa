@@ -25,16 +25,20 @@ import static org.apache.uima.fit.factory.CollectionReaderFactory.createReaderDe
 
 public class YodaQA_Web {
 	public static void main(String[] args) throws Exception {
-	    System.setProperty("cz.brmlab.yodaqa.pipline_ru", "true");
+	    String language = "en";
+	    if (args.length > 0 && "ru".equals(args[0])) {
+	        System.setProperty("cz.brmlab.yodaqa.pipline_ru", "true");
+	        language = "ru";
+	    }
 
-		WebInterface web = new WebInterface();
+		WebInterface web = new WebInterface("/webpublic-" + language);
 		Thread webThread = new Thread(web);
 		webThread.setDaemon(true);
 		webThread.start();
 
 		CollectionReaderDescription reader = createReaderDescription(
 				WebQuestionReader.class,
-				WebQuestionReader.PARAM_LANGUAGE, "ru");
+				WebQuestionReader.PARAM_LANGUAGE, language);
 
 		AnalysisEngineDescription pipeline = YodaQA.createEngineDescription();
 

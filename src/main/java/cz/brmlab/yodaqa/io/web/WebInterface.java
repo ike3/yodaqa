@@ -41,8 +41,15 @@ import cz.brmlab.yodaqa.flow.dashboard.QuestionDashboard;
 public class WebInterface implements Runnable {
 	final Logger logger = LoggerFactory.getLogger(WebInterface.class);
 
-	public void run() {
-		staticFileLocation("/webpublic");
+	private final String staticPath;
+
+	public WebInterface(String staticPath) {
+        super();
+        this.staticPath = staticPath;
+    }
+
+    public void run() {
+		staticFileLocation(staticPath);
 
 		// Ask a question
 		post(new Route("/q") {

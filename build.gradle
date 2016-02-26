@@ -89,6 +89,9 @@ task(web, dependsOn: 'classes', type: JavaExec) {
   main = 'cz.brmlab.yodaqa.YodaQA_Web'
   minHeapSize = "4g"
   maxHeapSize = "10g"
+  if(project.hasProperty('params')){
+    args(params.split(','))
+  }  
   classpath = sourceSets.main.runtimeClasspath
   systemProperties = System.getProperties()
 }
