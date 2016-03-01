@@ -33,3 +33,4 @@ bin
 target
 dump
 contrib/solr*
+contrib/dbpedia-spotlight
