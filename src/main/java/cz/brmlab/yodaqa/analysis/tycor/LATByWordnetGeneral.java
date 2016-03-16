@@ -37,7 +37,12 @@ public class LATByWordnetGeneral extends LATByWordnet {
         StringBuilder wnlist = new StringBuilder();
 
         if (lat.getSynset() == 0) {
-            IndexWord w = dictionary.getIndexWord(wnpos, lat.getText(), lat.getLanguage());
+            IndexWord w = null;
+            try {
+                w = dictionary.getIndexWord(wnpos, lat.getText(), lat.getLanguage());
+            } catch (Exception e) {
+                logger.warn("", e);
+            }
 
             if (w == null)
             {
