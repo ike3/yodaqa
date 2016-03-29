@@ -99,8 +99,8 @@ header h1 {
 /* Fade-out at right on overflow (ridiculously complex): */
 #answers td {
 	position: relative;
-	overflow: hidden;
-	white-space: nowrap;
+	/*overflow: hidden;
+	white-space: nowrap;*/
 }
 #answers td.text:after {
 	content: "";
